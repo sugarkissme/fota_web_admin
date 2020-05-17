@@ -67,13 +67,13 @@ export default {
                     title: '版本控制',
                       subs: [
                         {
-                            index:'form',
+                            index:'projectManagement',
                             title:'项目管理'
                         },  {
-                            index:'form',
+                            index:'versionManagement',
                             title:'版本管理'
                         },  {
-                            index:'form',
+                            index:'testManagement',
                             title:'测试IMEI管理'
                         }
 

@@ -41,6 +41,21 @@ export default new Router({
                     meta: { title: '基本表单' }
                 },
                 {
+                    path: '/projectManagement',
+                    component: () => import(/* webpackChunkName: "form" */ '../components/page/control/ProjectManagement.vue'),
+                    meta: { title: '项目管理' }
+                },
+                {
+                    path: '/testManagement',
+                    component: () => import(/* webpackChunkName: "form" */ '../components/page/control/TestManagement.vue'),
+                    meta: { title: '测试IMEI管理' }
+                },
+                {
+                    path: '/versionManagement',
+                    component: () => import(/* webpackChunkName: "form" */ '../components/page/control/VersionManagement.vue'),
+                    meta: { title: '版本管理' }
+                },
+                {
                     // 富文本编辑器组件
                     path: '/editor',
                     component: () => import(/* webpackChunkName: "editor" */ '../components/page/VueEditor.vue'),
