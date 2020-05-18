@@ -35,7 +35,7 @@
         <el-table-column label="OPERATOR" prop="operator" ></el-table-column>
         <el-table-column label="创建时间" prop="createTime" >
           <template slot-scope="scope">
-            {{scope.row.createTime | dateFormat}}
+            {{scope.row.createTime}}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="130px">
@@ -76,19 +76,20 @@ export default {
   },
   methods: {
     // 根据分页获取对应的项目列表
-     getProjectList() {
-      const res =  this.$http.get('/project/queryPage', {
-        params: this.queryInfo
-      })
-  console.log(res)
-      if (res.code !== 0) {
-        return this.$message.error('获取项目列表失败！')
-      }
-
-      this.$message.success('获取项目列表成功！')
-      console.log(res.data)
-      this.projectlist = res.data.data.list
-      this.totalSize = res.data.totalSize
+     getProjectList() {
+      this.$http.get('/project/queryPage', {
+        params: this.queryInfo
+      }).then(res=>{
+        res = res.data
+        console.log('项目列表查询',res.data.list)
+        if (res.code !== 0) {
+          return this.$message.error('获取项目列表失败！')
+        }
+        this.$message.success('获取项目列表成功！')
+        this.projectlist = res.data.list
+        this.totalSize = res.totalSize
+      })
+     
     },
     handleSizeChange(newSize) {
       this.queryInfo.pageSize = newSize
@@ -113,12 +114,11 @@ export default {
         return this.$message.info('已经取消删除！')
       }
 
-      const { data: res } = await this.$http.delete('/project/delete/${id}')
+      const { data: res } = await this.$http.post('/project/delete/'+id)
 
-      if (res.meta.status !== 200) {
+      if (res.code !== 0) {
         return this.$message.error('删除失败！')
       }
-
       this.$message.success('删除成功！')
       this.getProjectList()
     },
