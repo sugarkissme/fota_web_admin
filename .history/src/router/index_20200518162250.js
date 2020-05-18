@@ -1,6 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-
+var cors=require('cors');
+app.use(cors({
+    origin:['http://localhost:8080'],  //指定接收的地址
+    methods:['GET','POST'],  //指定接收的请求类型
+    alloweHeaders:['Content-Type','Authorization']  //指定header
+}))
 
 Vue.use(Router);
 

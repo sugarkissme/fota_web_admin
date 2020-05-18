@@ -10,6 +10,8 @@ import './assets/css/icon.css';
 import './components/common/directives';
 import 'babel-polyfill';
 import axios from 'axios'
+import VueResource from 'vue-resource'
+
 // 配置请求的跟路径
 axios.defaults.baseURL = 'localhost:8090'
 // axios.defaults.baseURL = 'http://47.101.157.241:8090'
@@ -21,7 +23,7 @@ axios.interceptors.request.use(config => {
 })
 Vue.prototype.$http = axios
 
-
+Vue.use(VueResource)
 Vue.config.productionTip = false;
 Vue.use(VueI18n);
 

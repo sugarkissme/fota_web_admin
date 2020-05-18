@@ -11,15 +11,23 @@ import './components/common/directives';
 import 'babel-polyfill';
 import axios from 'axios'
 // 配置请求的跟路径
-axios.defaults.baseURL = 'localhost:8090'
-// axios.defaults.baseURL = 'http://47.101.157.241:8090'
+// axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
+axios.defaults.baseURL = 'http://47.101.157.241:8090'
 axios.interceptors.request.use(config => {
   // console.log(config)
 //   config.headers.Authorization = window.sessionStorage.getItem('token')
+    config.header.
   // 在最后必须 return config
   return config
 })
 Vue.prototype.$http = axios
+
+var cors=require('cors');
+app.use(cors({
+    origin:['http://localhost:8080'],  //指定接收的地址
+    methods:['GET','POST'],  //指定接收的请求类型
+    alloweHeaders:['Content-Type','Authorization']  //指定header
+}))
 
 
 Vue.config.productionTip = false;

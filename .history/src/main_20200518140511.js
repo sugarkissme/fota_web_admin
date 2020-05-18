@@ -9,18 +9,6 @@ import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
 import './assets/css/icon.css';
 import './components/common/directives';
 import 'babel-polyfill';
-import axios from 'axios'
-// 配置请求的跟路径
-axios.defaults.baseURL = 'localhost:8090'
-// axios.defaults.baseURL = 'http://47.101.157.241:8090'
-axios.interceptors.request.use(config => {
-  // console.log(config)
-//   config.headers.Authorization = window.sessionStorage.getItem('token')
-  // 在最后必须 return config
-  return config
-})
-Vue.prototype.$http = axios
-
 
 Vue.config.productionTip = false;
 Vue.use(VueI18n);

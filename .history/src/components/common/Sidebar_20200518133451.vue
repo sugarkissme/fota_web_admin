@@ -85,6 +85,11 @@ export default {
                     title: 'tab选项卡'
                 },
                 {
+                    icon: 'el-icon-lx-cascades',
+                    index: 'table',
+                    title: '基础表格2'
+                },
+                {
                     icon: 'el-icon-lx-calendar',
                     index: '3',
                     title: '表单相关',
