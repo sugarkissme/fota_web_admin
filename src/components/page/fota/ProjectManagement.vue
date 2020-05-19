@@ -6,73 +6,183 @@
       <el-breadcrumb-item>版本控制</el-breadcrumb-item>
       <el-breadcrumb-item>项目管理</el-breadcrumb-item>
     </el-breadcrumb>
-
-    <!-- 卡片视图区域 -->
-    <el-card>
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <el-input placeholder="设计公司" v-model="queryInfo.designName" clearable @clear="getProjectList">
-            <el-button slot="append" icon="el-icon-search" @click="getProjectList"></el-button>
-          </el-input>
-        </el-col>
-          <el-col :span="6">
-          <el-input placeholder="品牌商" v-model="queryInfo.brandName" clearable @clear="getProjectList">
-            <el-button slot="append" icon="el-icon-search" @click="getProjectList"></el-button>
-          </el-input>
-        </el-col>
-        <el-col :span="4">
-          <el-button type="primary" @click="projectCreate">添加项目</el-button>
-        </el-col>
-      </el-row>
-
-      <!-- table表格区域 -->
-      <el-table :data="projectlist" border stripe>
-        <el-table-column type="index"></el-table-column>
-        <el-table-column label="设计公司" prop="designName" ></el-table-column>
-        <el-table-column label="品牌商" prop="brandName" ></el-table-column>
-        <el-table-column label="OEM" prop="oem" ></el-table-column>
-        <el-table-column label="LANGUAGE" prop="language" ></el-table-column>
-        <el-table-column label="OPERATOR" prop="operator" ></el-table-column>
-        <el-table-column label="创建时间" prop="createTime" >
-          <template slot-scope="scope">
-            {{scope.row.createTime}}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="130px">
-          <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeById(scope.row.id)"></el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <!-- 分页区域 -->
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryInfo.pageNo" :page-sizes="[20, 30, 40, 50]" :page-size="queryInfo.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalSize" background>
-      </el-pagination>
+    <div class="app-container">
+      <el-card class="filter-container" shadow="never">
+          <div>
+            <el-button 
+              style="float: right"
+              @click="getProjectList()"
+              type="primary"
+              size="small">
+              查询结果
+            </el-button>
+            <el-button
+              type="primary"
+              style="float: right;margin-right: 15px"
+              @click="handleResetSearch()"
+              size="small">
+              重置
+            </el-button>
+            <el-button
+              type="primary"
+              style="float: right ;margin-right: 15px"
+              class="btn-add"
+              @click="handleAddProduct()"
+              size="small">
+              添加
+            </el-button>
+            
+          </div>
+      <div style="margin-top: 15px">
+        <el-form inline="true" >
+          <el-form-item>
+            <el-select v-model="queryInfo.designName" placeholder="设计公司" clearable>
+              <el-option
+                v-for="item in designCompanyList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.label">
+              </el-option>
+            </el-select>
+          </el-form-item>
+            <el-form-item>
+            <el-select v-model="queryInfo.brandName" placeholder="品牌商选择" clearable>
+              <el-option
+                v-for="item in brandList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.label">
+              </el-option>
+            </el-select>
+          </el-form-item>
+       
+        </el-form>
+      </div>
     </el-card>
+
+      <!-- 添加项目的对话框 -->
+      <el-dialog title="添加项目" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+        <!-- 内容主体区域 -->
+        <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
+          <el-form-item label="设计公司" prop="projectName">
+            <el-input v-model="addForm.projectName"></el-input>
+          </el-form-item>
+          <el-form-item label="品牌商" prop="brandName">
+            <el-input v-model="addForm.brandName"></el-input>
+          </el-form-item>
+          <el-form-item label="OEM" prop="oem">
+            <el-input v-model="addForm.oem"></el-input>
+          </el-form-item>
+          <el-form-item label="PRODUCT" prop="productName">
+            <el-input v-model="addForm.productName"></el-input>
+          </el-form-item>
+          <el-form-item label="LANGUAGE" prop="language">
+            <el-input v-model="addForm.language"></el-input>
+          </el-form-item>
+          <el-form-item label="OPERATOR" prop="operator">
+            <el-input v-model="addForm.operator"></el-input>
+          </el-form-item>
+        </el-form>
+        <!-- 底部区域 -->
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="addDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="addUser">确 定</el-button>
+        </span>
+      </el-dialog>
+
+
+    </div>
+  
+     <div class="table-container">
+        <!-- table表格区域 -->
+        <el-table :data="projectlist" border stripe>
+          <el-table-column type="index"></el-table-column>
+          <el-table-column label="设计公司" prop="designName" ></el-table-column>
+          <el-table-column label="品牌商" prop="brandName" ></el-table-column>
+          <el-table-column label="OEM" prop="oem" ></el-table-column>
+          <el-table-column label="LANGUAGE" prop="language" ></el-table-column>
+          <el-table-column label="OPERATOR" prop="operator" ></el-table-column>
+          <el-table-column label="创建时间" prop="createTime" >
+            <template slot-scope="scope">
+              {{scope.row.createTime}}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="130px">
+            <template slot-scope="scope">
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeById(scope.row.id)"></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+     </div>
+     <div class="paginnation-container">
+        <!-- 分页区域 -->
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryInfo.pageNo" :page-sizes="[5, 10, 15, 20]" :page-size="queryInfo.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalSize" background>
+        </el-pagination>
+     </div>
   </div>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      // 查询参数对象
-      queryInfo: {
+const defaultListQuery = {
         brandName: '',
         productName: '',
         designName: '',
         pageNo: 1,
         pageSize: 20
-      },
+  };
+
+export default {
+  data() {
+    return {
+      // 查询参数对象
       // 项目列表
       projectlist: [],
       // 总数据条数
-      totalSize: 0
+      totalSize: 0,
+      brandList:[],
+      designCompanyList:[],
+      queryInfo: Object.assign({}, defaultListQuery),
+      // 控制添加项目对话框的显示与隐藏
+      addDialogVisible: false,
+      // 添加项目的表单数据
+      addForm: {
+        designName: '',
+        brandName: '',
+        oem: '',
+        language: '',
+        operator:'',
+        productName:''
+      },
+      // 添加表单的验证规则对象
+      addFormRules: {
+        designName: [
+          { required: true, message: '请选择设计公司', trigger: 'blur' },
+        
+        ],
+        brandName: [
+          { required: true, message: '请选择品牌商', trigger: 'blur' },
+        ],
+        productName: [
+          { required: true, message: '请输入产品名称', trigger: 'blur' },
+        ],
+        oem: [
+          { required: true, message: '请输入OEM', trigger: 'blur' },
+        ],
+        language: [
+          { required: true, message: '请输入语言', trigger: 'blur' },
+        ],
+        operator: [
+          { required: true, message: '请输入OPERATOR', trigger: 'blur' },
+        ]
+      },
+
+
     }
   },
   created() {
     this.getProjectList()
+    this.getBrandList()
+    this.getDesignCompanyList()
   },
   methods: {
     // 根据分页获取对应的项目列表
@@ -81,16 +191,49 @@ export default {
         params: this.queryInfo
       }).then(res=>{
         res = res.data
+        console.log('返回结果',res)
         console.log('项目列表查询',res.data.list)
         if (res.code !== 0) {
           return this.$message.error('获取项目列表失败！')
         }
-        this.$message.success('获取项目列表成功！')
         this.projectlist = res.data.list
-        this.totalSize = res.totalSize
+        this.totalSize = res.data.totalSize
       })
      
     },
+
+    getBrandList() {
+        this.$http.get('/brand/queryPage', {
+           params: this.queryInfo
+        }).then(res => {
+          res = res.data
+          this.brandList = [];
+          console.log('品牌信息返回',res)
+          let brandList = res.data.list;
+         
+          for (let i = 0; i < brandList.length; i++) {
+            this.brandList.push({label: brandList[i].brandName, value: brandList[i].id});
+          }
+          console.log('品牌信息列表',brandList)
+        });
+    },
+
+    
+    getDesignCompanyList() {
+        this.$http.get('/designCompany/queryPage', {
+           params: this.queryInfo
+        }).then(res => {
+          res = res.data
+          this.designCompanyList = [];
+          console.log('设计公司返回',res)
+          let designCompanyList = res.data.list;
+          for (let i = 0; i < designCompanyList.length; i++) {
+            this.designCompanyList.push({label: designCompanyList[i].designName, value: designCompanyList[i].id});
+          }
+          console.log('设计公司列表',designCompanyList)
+        });
+    },
+
     handleSizeChange(newSize) {
       this.queryInfo.pageSize = newSize
       this.getProjectList()
@@ -124,7 +267,34 @@ export default {
     },
     projectCreate() {
       this.$router.push('/project/create')
-    }
+    },
+    // 重置
+    handleResetSearch() {
+      this.queryInfo = Object.assign({}, defaultListQuery);
+    },
+
+    // 监听添加项目对话框的关闭事件
+    addDialogClosed() {
+      this.$refs.addFormRef.resetFields()
+    },
+    // 点击按钮，添加新项目
+    addUser() {
+      this.$refs.addFormRef.validate(async valid => {
+        if (!valid) return
+        // 可以发起添加项目的网络请求
+        const { data: res } = await this.$http.post('users', this.addForm)
+
+        if (res.meta.status !== 201) {
+          this.$message.error('添加项目失败！')
+        }
+
+        this.$message.success('添加项目成功！')
+        // 隐藏添加项目的对话框
+        this.addDialogVisible = false
+        // 重新获取项目列表数据
+        this.getUserList()
+      })
+    },
   }
 }
 </script>
