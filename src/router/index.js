@@ -57,6 +57,17 @@ export default new Router({
                     meta: { title: '版本管理' }
                 },
                 {
+                    path: '/versionAdd',
+                    component: () => import(/* webpackChunkName: "form" */ '../components/page/fota/VersionAdd.vue'),
+                    meta: { title: '添加最新版本' }
+                },
+                ,
+                {
+                    path: '/versionDetail',
+                    component: () => import(/* webpackChunkName: "form" */ '../components/page/fota/VersionDetail.vue'),
+                    meta: { title: '版本配置列表' }
+                },
+                {
                     // 富文本编辑器组件
                     path: '/editor',
                     component: () => import(/* webpackChunkName: "editor" */ '../components/page/VueEditor.vue'),

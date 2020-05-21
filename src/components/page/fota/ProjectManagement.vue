@@ -36,7 +36,7 @@
       <div style="margin-top: 15px">
         <el-form inline >
           <el-form-item>
-            <el-select v-model="queryInfo.designName" placeholder="设计公司" :filterable="true" clearable>
+            <el-select v-model="queryInfo.designName" placeholder="设计公司" :filterable="true" clearable @change="handleSelectionChange">
               <el-option
                 v-for="item in designCompanyList"
                 :key="item.value"
@@ -46,7 +46,7 @@
             </el-select>
           </el-form-item>
             <el-form-item>
-            <el-select v-model="queryInfo.brandName" placeholder="品牌商选择" :filterable="true" clearable>
+            <el-select v-model="queryInfo.brandName" placeholder="品牌商选择" :filterable="true" clearable  @change="handleSelectionChange">
               <el-option
                 v-for="item in brandList"
                 :key="item.value"
@@ -72,7 +72,7 @@
           </el-form-item>
            <el-form-item label="品牌商" prop="brandId" >
                <el-select v-model="addForm.brandId" placeholder="请选择品牌商" filterable style="width: 100%">
-                    <el-option v-for="item in brandList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    <el-option v-for="item in brandList" :key="item.value" :label="item.label" :value="item.value" ></el-option>
                </el-select>
           </el-form-item>
           <el-form-item label="OEM" prop="oem">
@@ -229,7 +229,9 @@ export default {
       })
      
     },
-
+    handleSelectionChange(){
+      this.getProjectList()
+    },
     getBrandList() {
         this.$http.get('/brand/queryPage', {
            params: this.queryInfo
@@ -298,6 +300,7 @@ export default {
     // 重置
     handleResetSearch() {
       this.queryInfo = Object.assign({}, defaultListQuery);
+      this.getProjectList()
     },
 
     // 监听添加项目对话框的关闭事件
