@@ -167,15 +167,16 @@
         <div class="table-container">
             <!-- table表格区域 -->
             <el-table :data="versionList" border stripe>
-                <el-table-column type="index"></el-table-column>
-                <el-table-column label="设计公司" prop="designName"></el-table-column>
-                <el-table-column label="品牌商" prop="brandName"></el-table-column>
-                <el-table-column label="项目" prop="projectName"></el-table-column>
+                <!-- <el-table-column type="index"></el-table-column> -->
+                <el-table-column label="版本ID" width="80px" prop="versionId"></el-table-column>
+                <el-table-column label="设计公司" prop="designName"  ></el-table-column>
+                <el-table-column label="品牌商" prop="brandName" ></el-table-column>
+                <el-table-column label="项目" prop="projectName" width="330px"></el-table-column>
                 <el-table-column label="创建时间" prop="createTime"></el-table-column>
                 <el-table-column label="版本号" prop="versionNo"></el-table-column>
                 <el-table-column label="版本状态" prop="status"></el-table-column>
                 <el-table-column label="备注" prop="memo"></el-table-column>
-                <el-table-column label="操作" width="150px">
+                <el-table-column label="操作" width="240px">
                     <template slot-scope="scope">
                         <el-button type="warning" icon="el-icon-delete" size="mini" @click="handleDeleteVersion(scope.row)">
 

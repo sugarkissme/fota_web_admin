@@ -65,28 +65,28 @@
         <!-- 内容主体区域 -->
         <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
           
-          <el-form-item label="设计公司" prop="designId" >
+          <el-form-item label="设计公司" prop="designId" label-width="120px" >
                <el-select v-model="addForm.designId" placeholder="请选择设计公司" filterable style="width: 100%">
                     <el-option v-for="item in designCompanyList" :key="item.value" :label="item.label" :value="item.value"></el-option>
                </el-select>
           </el-form-item>
-           <el-form-item label="品牌商" prop="brandId" >
+           <el-form-item label="品牌商" prop="brandId" label-width="120px" >
                <el-select v-model="addForm.brandId" placeholder="请选择品牌商" filterable style="width: 100%">
                     <el-option v-for="item in brandList" :key="item.value" :label="item.label" :value="item.value" ></el-option>
                </el-select>
           </el-form-item>
-          <el-form-item label="OEM" prop="oem">
-            <el-input v-model="addForm.oem" placeholder="原始设备制造商" ></el-input>
+          <el-form-item label="OEM" prop="oem" label-width="120px"  >
+            <el-input v-model="addForm.oem" placeholder="原始设备制造商"  ></el-input>
           </el-form-item>
-          <el-form-item label="PRODUCT" prop="productName">
+          <el-form-item label="PRODUCT" label-width="120px" prop="productName">
             <el-input v-model="addForm.productName" placeholder="产品名称" s></el-input>
           </el-form-item>
-          <el-form-item label="LANGUAGE" prop="language">
+          <el-form-item label="LANGUAGE" prop="language" label-width="120px">
             <el-select v-model="addForm.language" placeholder="语言" filterable style="width: 100%">
                     <el-option v-for="item in languages" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="OPERATOR" prop="operator">
+          <el-form-item label="OPERATOR" prop="operator" label-width="120px">
             <el-select v-model="addForm.operator" placeholder="操作" filterable style="width: 100%">
                     <el-option v-for="item in operators" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
