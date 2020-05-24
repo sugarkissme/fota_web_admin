@@ -33,9 +33,13 @@
           <el-table-column label="文件名" prop="fileName" ></el-table-column>
           <el-table-column label="大小" prop="fileSize" ></el-table-column>
           <el-table-column label="上传升级包">
-            <el-upload :action="ossUploadUrl" :data="dataObj" list-type="picture"  :before-upload="beforeUpload" :on-remove="handleRemove" :on-success="handleUploadSuccess" :on-preview="handlePreview" :limit="maxCount" >
-             <i class="el-icon-upload">上传文件</i>
-              </el-upload>
+            <template slot-scope="scope">
+              <div>
+                <el-upload :action="ossUploadUrl" :data="dataObj" list-type="picture"  :before-upload="beforeUpload" :on-remove="handleRemove" :on-success="handleUploadSuccess" :on-preview="handlePreview" :limit="maxCount" accept=".zip" >
+                     <i class="el-icon-upload" @click="getUploadFileData(scope.row)">上传文件</i>
+                </el-upload>
+              </div>
+            </template>
           </el-table-column>
           <el-table-column label="升级策略" prop="strategy" >
               <template slot-scope="scope" >
@@ -50,12 +54,17 @@
           <el-table-column label="发布时间" prop="releaseTime" ></el-table-column>
           <el-table-column label="是否启用" prop="useFlag" > 
             <template slot-scope="scope">
-              <el-switch v-model="scope.row.useFlag" :active-value="1" :inactive-value="0" @change="handleUpdateVersion(scope.row)"></el-switch>
+              <el-switch v-model="scope.row.useFlag" :active-value="1" :inactive-value="0" @change="handleUpdateUseFlag(scope.row)"></el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="130px">
             <template slot-scope="scope">
-              <el-button type="info" size="mini" @click="removeById(scope.row.id)">待上传<i class="el-icon-upload el-icon--right"></i></el-button>
+              <el-button  v-if="scope.row.status===1" size="mini" disabled>待上传<i class="el-icon--right"></i></el-button>
+              <el-button  v-if="scope.row.status===2" size="mini" @click="handleUpdateVersioStatus(scope.row,4)">测试通过</el-button>
+              <el-button  v-if="scope.row.status===2" size="mini" @click="handleUpdateVersioStatus(scope.row,3)">测试不通过</el-button>
+              <el-button  v-if="scope.row.status===3" size="mini" disabled >测试不通过</el-button>
+              <el-button  v-if="scope.row.status===4" size="mini" @click="handleUpdateVersioStatus(scope.row,5)">发布</el-button>
+              <el-button  v-if="scope.row.status===5" size="mini" @click="handleUpdateVersioStatus(scope.row,2)">取消发布</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -69,7 +78,7 @@
 </template>
 
 <script>
-import {updateVersionDetailStatus} from '@/api/versionDetail'
+import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail'
 
 const defaultListQuery = {
         pageNo: 1,
@@ -121,19 +130,13 @@ export default {
         updateVersionDetail:{
           detailId:null,
           useFlag:null,
-          status:null
+          status:null,
+          fileName:null
         },
         dataObj: {
-          policy: '',
-          signature: '',
-          key: '',
-          ossaccessKeyId: '',
-          dir: '',
-          host: '',
-          // callback:'',
+        
         },
-        ossUploadUrl:'',
-        useOss:true, //使用oss->true
+        ossUploadUrl:'/aliyun/oss/upload',
         maxCount:1
        
         
@@ -143,7 +146,6 @@ export default {
   created() {
     this.getParam()
     this.getVersionDetailList()
-    this.ossUploadUrl='${window.location.origin}/aliyun/oss/upload'
   },
   methods: {
       
@@ -155,7 +157,7 @@ export default {
         console.log("跳转接受的参数",param)
       },
 
-    computeStatus(status){
+     computeStatus(status){
         if(status=='0'){
             return '初始版本'
         }else if(status=='1'){
@@ -175,7 +177,17 @@ export default {
         }
         return '待上传';
     },
-   async handleUpdateVersion(row){
+  //修改状态
+ async handleUpdateVersioStatus(row,status){
+    this.updateVersionDetail.detailId=row.id
+    this.updateVersionDetail.status=status
+      const {data:res}=  await updateVersionDetailStatus(this.updateVersionDetail)
+      if(res.code!=0){
+        return this.$message.error(res.msg)
+      }
+      this.getVersionDetailList()
+  },
+   async handleUpdateUseFlag(row){
       console.log('***updateVersion****',row)
       this.updateVersionDetail.detailId=row.id
       this.updateVersionDetail.useFlag=row.useFlag
@@ -187,11 +199,8 @@ export default {
         }else{
           row.useFlag=0
         }
-        return this.$message(res.msg)
+        return this.$message.error(res.msg)
       }
-      return this.$message.success('修改成功')
-
-
     },
     getVersionDetailList() {
         this.$http.get('/version/queryVersionDetailPageByVersionId',{
@@ -206,6 +215,12 @@ export default {
                     console.log('返回list',this.versionDetailList)
                 });
      
+    },
+    getUploadFileData(row){
+      console.log("获取行",row)
+      this.updateVersionDetail.detailId=row.id
+      this.updateVersionDetail.status=2
+
     },
     handleSizeChange(newSize) {
       this.queryInfo.pageSize = newSize
@@ -223,9 +238,52 @@ export default {
         this.dialogVisible = true;
       },
       beforeUpload(file) {
+
+        let types = ['application/x-zip-compressed','application/x-zip'];
+        console.log('文件类型',file.type)
+        const isImage = types.includes(file.type);
+
+        const isLtSize = file.size / 1024 / 1024 <= 1024;
+
+        if (!isImage) {
+
+          this.$message.error('上传文件只能是zip格式!');
+
+          return false;
+
+        }
+        if (!isLtSize) {
+
+          this.$message.error('上传文件不能超过 1G!');
+
+          return false;
+        }
+
+        return true;
       },
-      handleUploadSuccess(res, file) {
-      
+      //上传文件成功后回调
+     async handleUploadSuccess(res, file) {
+        console.log('--res---',res)
+        console.log("文件大小",file.size)
+        console.log("文件类型",file.type)
+        if(res.code!=0){
+          return this.$message.error("上传文件失败，稍后重试")
+        }
+        //上传成功后更新上传数据
+        this.updateVersionDetail.downloadUrl=res.data
+        this.updateVersionDetail.fileName=file.name
+        var num=file.size/ 1024 / 1024
+        var flag=false;
+        if(num<0.01){
+          flag=true
+          num=file.size/ 1024
+        }
+        this.updateVersionDetail.fileSize=num.toFixed(2)+""+(flag==true?"Kb":"M")
+        const {data:res2} =  await updateVersionDetail(this.updateVersionDetail)
+        this.getVersionDetailList()
+        
+        
+
       }
   }
 }

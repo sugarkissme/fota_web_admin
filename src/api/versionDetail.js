@@ -13,3 +13,7 @@ export function fetchList(params) {
   export function updateVersionDetailStatus(params) {
     return axios.post('/version/updateVersionDetailStatus',params)
   }
+/**更新版本详情配置 */
+  export function updateVersionDetail(params) {
+    return axios.post('/version//updateVersionDetail',params)
+  }
