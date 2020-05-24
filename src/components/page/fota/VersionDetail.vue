@@ -30,9 +30,9 @@
           <!-- <el-table-column type="index" prop="id"></el-table-column> -->
           <el-table-column label="版本详情ID" prop="id" width="100px" ></el-table-column>
           <el-table-column label="源版本号" prop="oldVersionNo" ></el-table-column>
-          <el-table-column label="文件名" prop="fileName" ></el-table-column>
-          <el-table-column label="大小" prop="fileSize" ></el-table-column>
-          <el-table-column label="上传升级包">
+          <el-table-column label="文件名" prop="fileName" width="220px" ></el-table-column>
+          <el-table-column label="大小" prop="fileSize" width="90px" ></el-table-column>
+          <el-table-column label="上传升级包" width="120px">
             <template slot-scope="scope">
               <div>
                 <el-upload :action="ossUploadUrl" :data="dataObj" list-type="picture"  :before-upload="beforeUpload" :on-remove="handleRemove" :on-success="handleUploadSuccess" :on-preview="handlePreview" :limit="maxCount" accept=".zip" >
@@ -41,23 +41,23 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="升级策略" prop="strategy" >
+          <el-table-column label="升级策略" prop="strategy"  width="100px" >
               <template slot-scope="scope" >
                     <el-button type="text" size="mini"  @click="removeById(scope.row.id)">定制配置</el-button>
               </template>
           </el-table-column>
-          <el-table-column label="当前状态" prop="status" >
+          <el-table-column label="当前状态"  width="80px" prop="status" >
                <template slot-scope="scope" >
                  <span>{{computeStatus(scope.row.status)}}</span>
               </template>
           </el-table-column>
-          <el-table-column label="发布时间" prop="releaseTime" ></el-table-column>
-          <el-table-column label="是否启用" prop="useFlag" > 
+          <el-table-column label="发布时间" prop="releaseTime"  width="160px" ></el-table-column>
+          <el-table-column label="是否启用" prop="useFlag" width="80px" > 
             <template slot-scope="scope">
               <el-switch v-model="scope.row.useFlag" :active-value="1" :inactive-value="0" @change="handleUpdateUseFlag(scope.row)"></el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="130px">
+          <el-table-column label="操作" width="210px">
             <template slot-scope="scope">
               <el-button  v-if="scope.row.status===1" size="mini" disabled>待上传<i class="el-icon--right"></i></el-button>
               <el-button  v-if="scope.row.status===2" size="mini" @click="handleUpdateVersioStatus(scope.row,4)">测试通过</el-button>
