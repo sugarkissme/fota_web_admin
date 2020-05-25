@@ -176,7 +176,7 @@
                 <el-table-column label="版本号" prop="versionNo"></el-table-column>
                 <el-table-column label="版本状态" prop="status"></el-table-column>
                 <el-table-column label="备注" prop="memo"></el-table-column>
-                <el-table-column label="操作" width="240px">
+                <el-table-column label="操作" width="260px">
                     <template slot-scope="scope">
                         <el-button type="warning" icon="el-icon-delete" size="mini" @click="handleDeleteVersion(scope.row)">
 
