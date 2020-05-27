@@ -42,7 +42,7 @@
                 </el-tabs>
                 
                 <el-form-item label="升级描述：" label-width='100px'      prop="dsc">
-                      <el-input type='textarea'  v-model="addForm.dsc"  :autosize="{ minRows: 20, maxRows: 80}" > </el-input>
+                      <el-input type='textarea'  v-model="addForm.dsc"  :autosize="{ minRows: 10, maxRows: 80}" > </el-input>
                 </el-form-item>
                 
             </el-form>
@@ -54,21 +54,15 @@
         </div>
 
         <el-dialog title="选择语言" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
-
             <div v-for="(item,index) in languages" :key="index"> 
-                <el-checkbox-group v-model="languages">
-                    <el-checkbox label="复选框 A"></el-checkbox>
-                    <el-checkbox label="复选框 B"></el-checkbox>
-                    <el-checkbox label="复选框 C"></el-checkbox>
-                </el-checkbox-group>
-
+               <el-checkbox >
+                   {{languages[index].languageName}}
+                    </el-checkbox>
             </div>
-
-          
             <!-- 底部区域 -->
             <span slot="footer" class="dialog-footer">
             <el-button @click="addDialogVisible = false">取 消</el-button>
-            <el-button type="primary"  :style="{ display: showConfirm}" @click="configStrategy">确 定</el-button>
+            <el-button type="primary"  >确 定</el-button>
             </span>
       </el-dialog>
     </div>
@@ -98,8 +92,7 @@ export default {
             // 控制添加项目对话框的显示与隐藏
             addDialogVisible: false,
             // 添加项目的表单数据
-            addForm: 
-                {
+            addForm: {
                     versionNo: '',
                     versionSize: 'M',
                     releaseTime: new Date(),
@@ -107,8 +100,8 @@ export default {
                     versionSizeTitle:'',
                     versionNoTitle:'',
                     dsc:'',
-                }
-
+            },
+            languagesCheck:["中文(中国)"]
             ,
             languages: [
                 {
@@ -123,18 +116,22 @@ export default {
                 versionNo: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
             },
             editableTabsValue: '2',
+
             
-            editableTabs: [{
-            title: '中文(中国)',
-            name: '1',
-            content: 'Tab 1 content'
-            }],
+            
+            editableTabs: [
+                {
+                title: '中文(中国)',
+                name: '1',
+                content: 'Tab 1 content'
+                }
+            ],
             tabIndex: 2
         };
     },
     created() {
         this.getProjectList();
-        this.getAllLanguages
+      
     },
     methods: {
         getVersionList() {
@@ -153,7 +150,9 @@ export default {
                     // console.log('版本设列表', this.versionList);
                 });
         },
-
+          addDialogClosed() {
+             this.$refs.addFormRef.resetFields()
+        },
         // 根据分页获取对应的项目列表
         getProjectList() {
             this.$http
@@ -197,6 +196,7 @@ export default {
                 this.$message.error('选择原因失败:'+res.msg);
              }
              this.languages=res.data
+             console.log("语言",this.languages)
 
 
         },
@@ -210,6 +210,7 @@ export default {
             });
             this.editableTabsValue = newTabName;
             this.addDialogVisible=true
+            this.chooseLanguages();
       },
         removeTab(targetName) {
             let tabs = this.editableTabs;
@@ -227,7 +228,9 @@ export default {
         this.editableTabsValue = activeName;
         this.editableTabs = tabs.filter(tab => tab.name !== targetName);
       }
-    }
+    },
+   
+  
 };
 </script>
 
