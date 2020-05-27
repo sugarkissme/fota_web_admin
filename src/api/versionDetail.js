@@ -17,3 +17,9 @@ export function fetchList(params) {
   export function updateVersionDetail(params) {
     return axios.post('/version//updateVersionDetail',params)
   }
+
+  export function getAllLanguages(){
+    return axios.get('/version/queryLanguageAll')
+  }
+
+

@@ -10,10 +10,10 @@
             <!-- 内容主体区域 -->
             <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
                 
-                <el-form-item label="版本号" prop="versionNo">
+                <el-form-item label="版本号"  label-width='100px' prop="versionNo">
                     <el-input v-model="addForm.versionNo" placeholder="版本号"></el-input>
                 </el-form-item>
-                <el-form-item label="项目" prop="designId">
+                <el-form-item label="项目"  label-width='100px' prop="designId">
                     <el-select v-model="addForm.designId" placeholder="请选择项目" filterable style="width: 100%" >
                         <el-option v-for="item in projectlist" :key="item.value" :label="item.label" :value="item.value">
 
@@ -21,21 +21,30 @@
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="发布日期：">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="addForm.createTime" style="width: 150px">
-
+                <el-form-item  label-width='100px' label="发布日期：" >
+                    <el-date-picker  value-format="yyyy-MM-dd" type="date" placeholder="选择日期"    v-model="addForm.releaseTime" style="width: 150px">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="语言" prop="language">
-                    <el-select v-model="addForm.language" placeholder="选择语言" filterable style="width: 100%">
-                        <el-option
-                            v-for="item in languages"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                        ></el-option>
-                    </el-select>
+
+                <el-form-item label="版本大小：" label-width='100px' style="width: 300px"  prop="versionSize">
+                      <el-input v-model="addForm.versionSize" > </el-input>
                 </el-form-item>
+                
+                <div style="margin-bottom: 20px;">
+                    <el-button size="small" @click="addTab(editableTabsValue)">
+                         选择语言
+                    </el-button>
+                </div>
+                <el-tabs v-model="editableTabsValue" type="card"  @tab-remove="removeTab"  :closable="editableTabs.length>1">
+                    <el-tab-pane    v-for="(item, index) in editableTabs"    :key="item.name"    :label="item.title"    :name="item.name">
+                        {{item.content}}
+                    </el-tab-pane>
+                </el-tabs>
+                
+                <el-form-item label="升级描述：" label-width='100px'      prop="dsc">
+                      <el-input type='textarea'  v-model="addForm.dsc"  :autosize="{ minRows: 20, maxRows: 80}" > </el-input>
+                </el-form-item>
+                
             </el-form>
             <!-- 底部区域 -->
             <span slot="footer" class="dialog-footer">
@@ -43,11 +52,33 @@
                 <el-button type="primary" @click="addVersion">确 定</el-button>
             </span>
         </div>
+
+        <el-dialog title="选择语言" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+
+            <div v-for="(item,index) in languages" :key="index"> 
+                <el-checkbox-group v-model="languages">
+                    <el-checkbox label="复选框 A"></el-checkbox>
+                    <el-checkbox label="复选框 B"></el-checkbox>
+                    <el-checkbox label="复选框 C"></el-checkbox>
+                </el-checkbox-group>
+
+            </div>
+
+          
+            <!-- 底部区域 -->
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="addDialogVisible = false">取 消</el-button>
+            <el-button type="primary"  :style="{ display: showConfirm}" @click="configStrategy">确 定</el-button>
+            </span>
+      </el-dialog>
     </div>
+
+    
 </template>
 
 <script>
-import { deleteVersion } from '@/api/version';
+
+import { getAllLanguages } from '@/api/versionDetail';
 const defaultListQuery = {
     projectName: ''
 };
@@ -67,54 +98,43 @@ export default {
             // 控制添加项目对话框的显示与隐藏
             addDialogVisible: false,
             // 添加项目的表单数据
-            addForm: {
-                designId: '',
-                brandId: '',
-                versionNo: '',
-                language: '',
-                operator: '',
-                productName: ''
-            },
-            operators: [
+            addForm: 
                 {
-                    value: 'other',
-                    label: 'other'
-                },
-                {
-                    value: 'CMCC',
-                    label: 'CMCC'
-                },
-                {
-                    value: 'CU',
-                    label: 'CU'
+                    versionNo: '',
+                    versionSize: 'M',
+                    releaseTime: new Date(),
+                    releaseTimeTitle: '',
+                    versionSizeTitle:'',
+                    versionNoTitle:'',
+                    dsc:'',
                 }
-            ],
+
+            ,
             languages: [
                 {
-                    value: 'zh-CN',
-                    label: '中文'
-                },
-                {
-                    value: 'en-US',
-                    label: '英文'
-                },
-                {
-                    value: 'ja-JP',
-                    label: '日语'
+                    versionSizeTitle:'',
+                    versionNoTitle:'',
+                    releaseTimeTitle:'',
                 }
+                
             ],
             // 添加表单的验证规则对象
             addFormRules: {
-                designId: [{ required: true, message: '请选择设计公司', trigger: 'blur' }],
-                brandId: [{ required: true, message: '请选择品牌商', trigger: 'blur' }],
-                productName: [{ required: true, message: '请输入产品名称', trigger: 'blur' }],
                 versionNo: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
-                language: [{ required: true, message: '请语言', trigger: 'blur' }],
-            }
+            },
+            editableTabsValue: '2',
+            
+            editableTabs: [{
+            title: '中文(中国)',
+            name: '1',
+            content: 'Tab 1 content'
+            }],
+            tabIndex: 2
         };
     },
     created() {
         this.getProjectList();
+        this.getAllLanguages
     },
     methods: {
         getVersionList() {
@@ -169,7 +189,44 @@ export default {
                 // 重新获取项目列表数据
                 this.getProjectList();
             });
-        }
+        },
+       async chooseLanguages(){
+             const { data: res }=await getAllLanguages()
+             console.log('返回语言列表',res)
+             if(res.code!=0){
+                this.$message.error('选择原因失败:'+res.msg);
+             }
+             this.languages=res.data
+
+
+        },
+
+        addTab(targetName) {
+            let newTabName = ++this.tabIndex + '';
+            this.editableTabs.push({
+            title: 'New Tab1',
+            name: newTabName,
+            content: ""
+            });
+            this.editableTabsValue = newTabName;
+            this.addDialogVisible=true
+      },
+        removeTab(targetName) {
+            let tabs = this.editableTabs;
+            let activeName = this.editableTabsValue;
+            if (activeName === targetName) {
+                tabs.forEach((tab, index) => {
+                    if (tab.name === targetName) {
+                    let nextTab = tabs[index + 1] || tabs[index - 1];
+                    if (nextTab) {
+                        activeName = nextTab.name;
+                    }
+                    }
+                });
+            }
+        this.editableTabsValue = activeName;
+        this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+      }
     }
 };
 </script>
