@@ -15,7 +15,7 @@ export function createVersion(data) {
 
 /**版本信息查询 */
 export function getversionInfo(versionId) {
-  return axios.get('/version/queryVersion?versionId=' + versionId)
+  return axios.get('/version/queryVersion/'+ versionId)
 }
 /**编辑版本 */
 export function updateversion(data) {
