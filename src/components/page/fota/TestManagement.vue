@@ -40,7 +40,7 @@
                         style="float: right;margin-right: 30px"
                         @click="handleResetSearch()"
                         size="small"
-                    >重置所有状态</el-button>
+                    >重置筛选条件</el-button>
 
                 </div>
                 <div style="margin-top: -10px">
@@ -50,7 +50,7 @@
                                 v-model="queryInfo.designName"
                                 placeholder="设计公司"
                                 :filterable="true"
-                                clearable
+                                clearable @change="handleSelectionChange"
                             >
                                 <el-option
                                     v-for="item in designCompanyList"
@@ -65,7 +65,7 @@
                                 v-model="queryInfo.brandName"
                                 placeholder="品牌商选择"
                                 :filterable="true"
-                                clearable
+                                clearable @change="handleSelectionChange"
                             >
                                 <el-option
                                     v-for="item in brandList"
@@ -80,7 +80,7 @@
                                 v-model="queryInfo.projectName"
                                 placeholder="项目选择"
                                 :filterable="true"
-                                clearable
+                                clearable @change="handleSelectionChange"
                             >
                                 <el-option
                                     v-for="item in projectlist"
@@ -115,11 +115,11 @@
             </el-dialog>
 
                    <!-- 删除指定项目IMEI的对话框 -->
-            <el-dialog   title="删除指定项目"    :visible.sync="delDialogVisible"     width="50%"     @close="delDialogClose" >
+            <el-dialog   title="删除指定项目IMEI"    :visible.sync="delDialogVisible"     width="50%"     @close="delDialogClose" >
                 <!-- 内容主体区域 -->
-                <el-form :model="addForm" :rules="delFormRules" ref="delFormRef" label-width="70px">
+                <el-form :model="delForm" :rules="delFormRules" ref="delFormRef" label-width="70px">
                     <el-form-item label="选择项目" label-width="120px" prop="projectId">
-                        <el-select  v-model="addForm.projectId"  placeholder="请选择项目"  filterable  style="width: 100%" >
+                        <el-select  v-model="delForm.projectId"  placeholder="请选择项目"  filterable  style="width: 100%" >
                             <el-option v-for="item in projectlist" :key="item.value" :label="item.label" :value="item.value" ></el-option>
                         </el-select>
                     </el-form-item>
@@ -127,7 +127,7 @@
                 <!-- 底部区域 -->
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="delDialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="delImei">确定</el-button>
+                    <el-button type="primary" @click="delImeiByProject">确定</el-button>
                 </span>
             </el-dialog>
 
@@ -184,7 +184,7 @@ const defaultListQuery = {
     designName: '',
     projectName: '',
     pageNo: 1,
-    pageSize: 20
+    pageSize: 30
 };
 
 export default {
@@ -247,7 +247,9 @@ export default {
                     this.totalSize = res.data.totalSize;
                 });
         },
-
+        handleSelectionChange(){
+            this.getImeiList()
+        },
         // 根据分页获取对应的项目列表
         getProjectList() {
             this.$http
@@ -354,6 +356,7 @@ export default {
         // 重置
         handleResetSearch() {
             this.queryInfo = Object.assign({}, defaultListQuery);
+            this.getImeiList()
         },
 
         // 监听添加IEMI对话框的关闭事件
@@ -380,7 +383,7 @@ export default {
             });
         },
           // 点击按钮，删除指定项目IMEI
-        delImei() {
+        delImeiByProject() {
             this.$refs.delFormRef.validate(async valid => {
                 if (!valid) return;
                  const confirmResult = await this.$confirm('此操作将永久删除该项目的所有IMEI, 是否继续?', '提示', {

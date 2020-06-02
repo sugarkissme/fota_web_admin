@@ -56,11 +56,31 @@ export default new Router({
                     component: () => import(/* webpackChunkName: "form" */ '../components/page/fota/VersionManagement.vue'),
                     meta: { title: '版本管理' }
                 },
-                {
-                    path: '/versionAdd',
-                    component: () => import(/* webpackChunkName: "form" */ '../components/page/fota/VersionAdd.vue'),
-                    meta: { title: '添加最新版本' }
+                // {
+                //     path: '/versionAdd',
+                //     component: () => import(/* webpackChunkName: "form" */ '../components/page/fota/VersionAdd.vue'),
+                //     meta: { title: '添加最新版本' }
+                // },
+                // {
+                //     path: '/versionUpdate',
+                //     component: () => import(/* webpackChunkName: "form" */ '../components/page/fota/VersionUpdate.vue'),
+                //     meta: { title: '编辑版本' }
+                // },
+
+                { 
+                    path:'/versionAdd',
+                    name:'versionHomeAdd',
+                    component: () => import('@/components/page/fota/VersionAdd'),
+                    meta:{title:'添加最新版本'},
+                    hidden:true
                 },
+                { 
+                    path:'/versionUpdate',
+                    name:'versionHomeUpdate',
+                    component: () => import('@/components/page/fota/VersionUpdate'),
+                    meta:{title:'编辑版本'},
+                    hidden:true
+                }
                 ,
                 {
                     path: '/versionDetail',

@@ -186,7 +186,7 @@
                             type="primary"
                             icon="el-icon-edit"
                             size="mini"
-                            @click="handleEditVersion(scope.row.versionId)"
+                            @click="handleEditVersion(scope.row)"
                         >编辑</el-button>
                     </template>
                 </el-table-column>
@@ -435,8 +435,8 @@ export default {
             
             });
         },
-           handleEditVersion() {
-            this.$router.push('/project/create');
+           handleEditVersion(row) {
+            this.$router.push({path:'/versionUpdate',query:{versionId:row.versionId}});
         },
         computeStatus(status){
         if(status=='0'){

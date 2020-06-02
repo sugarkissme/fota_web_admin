@@ -294,9 +294,9 @@ export default {
       this.$message.success('删除成功！')
       this.getProjectList()
     },
-    projectCreate() {
-      this.$router.push('/project/create')
-    },
+    // projectCreate() {
+    //   this.$router.push('/project/create')
+    // },
     // 重置
     handleResetSearch() {
       this.queryInfo = Object.assign({}, defaultListQuery);
