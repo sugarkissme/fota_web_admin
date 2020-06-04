@@ -4,7 +4,6 @@
         <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>版本控制</el-breadcrumb-item>
-            <el-breadcrumb-item>添加最新版本</el-breadcrumb-item>
         </el-breadcrumb>
         <div class="app-container">
             <!-- 内容主体区域 -->
@@ -22,25 +21,27 @@
                 <el-form-item label="版本大小：" label-width='100px' style="width: 300px"  prop="versionSize">
                         <el-input v-model="addForm.versionSize" > </el-input>
                 </el-form-item>
-                 <el-form-item label="发布日期：" label-width='100px' style="width: 300px"  prop="versionSize">
-                        <el-input v-model="addForm.versionSize" > </el-input>
+                 <el-form-item label="发布日期：" label-width='100px' style="width: 300px"  prop="releaseTime">
+                     <el-date-picker   type="date"  v-model="addForm.releaseTime"   value-format="yyyy-MM-dd"   style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <div style="margin-bottom: 20px;">
-                    <el-button size="small" @click="addLanguages(languages)">
+                    <el-button size="small" @click="addLanguages(languages)" >
                          选择语言
                     </el-button>
                 </div>
-                
-                <el-tabs v-model="editableTabsValue" type="card"  @tab-remove="removeTab"  :closable="editableTabs.length>1">
+                <!-- -->
+                <el-tabs   v-model="editableTabsValue" type="card"  @tab-remove="removeTab"  :closable="editableTabs.length>1">
                     <el-tab-pane    v-for="(item, index) in editableTabs"    :key="item.name"    :label="item.title"    :name="item.name">
-                        {{item.content}}
+                       <div>
+                            <el-form-item label="升级描述：" label-width='100px'      prop="dsc">
+                                    <el-input type='textarea'  v-model="item.dsc"  :autosize="{ minRows: 10, maxRows: 80}" > </el-input>
+                            </el-form-item>
+                        </div>
                     </el-tab-pane>
                 </el-tabs>
                  
 
-                <el-form-item label="升级描述：" label-width='100px'      prop="dsc">
-                      <el-input type='textarea'  v-model="addForm.dsc"  :autosize="{ minRows: 10, maxRows: 80}" > </el-input>
-                </el-form-item>
+               
                 
             </el-form>
             <!-- 底部区域 -->
@@ -53,17 +54,17 @@
 
 
 
-        <el-dialog title="选择语言" :visible.sync="addDialogVisible" width="50%" @close="checkBoxClosed">
-            <div  ref="languageRef"  v-for="(item,index) in languages" :key="index"> 
-               <el-checkbox >
-                   {{languages[index].languageName}}
-                </el-checkbox>
-            </div>
+        <el-dialog title="选择语言" :visible.sync="addDialogVisible" width="50%"   >
+
+            <el-checkbox-group v-model="checkList" :min="1" >
+                <el-checkbox  v-for="language in languages" :key="language.languageCode" :label="language.languageName"></el-checkbox>
+            </el-checkbox-group>
             <!-- 底部区域 -->
             <span slot="footer" class="dialog-footer">
-            <el-button @click="addDialogVisible = false">取消</el-button>
-            <el-button type="primary"  >确定</el-button>
+                <el-button @click="addDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleCheckedLanguagesChange" >确定</el-button>
             </span>
+         
       </el-dialog>
     </div>
 
@@ -74,6 +75,26 @@
 
 import { getAllLanguages } from '@/api/versionDetail';
 import {getversionInfo} from '@/api/version'
+
+const baseForm={
+                versionId:null,
+                versionNo:null,
+                createTime:new Date(),
+                projectName:null,
+                versionSize:'MB',
+                releaseTime:new Date,
+                languageVOS:[
+                    {
+                        languageCode:'zh-cn',
+                        languageName:null,
+                        versionNo:null,
+                        createTime:null,
+                        versionSize:'MB',
+                        dsc:null,
+                        id:null
+                    }
+                ]
+        }
 
 export default {
 
@@ -95,26 +116,8 @@ export default {
             },
             projectlist:[],
             // 添加项目的表单数据
-            addForm: {
-                versionId:null,
-                versionNo:null,
-                createTime:new Date(),
-                projectName:null,
-                versionSize:'MB',
-                releaseTime:new Date,
-                languageVOS:[
-                    {
-                        languageCode:'zh-cn',
-                        versionNo:null,
-                        createTime:null,
-                        versionSize:'MB',
-                        dsc:null,
-                        id:null
-                    }
-                ]
-            },
-            languagesCheck:["中文(中国)"],
-            checkList:[],
+            addForm:  Object.assign({},baseForm)  ,
+            checkList:['中文(中国)'],
             languages: [
                 {   
                     id:'',
@@ -136,6 +139,7 @@ export default {
                 languageVOS:[
                     {
                         languageCode:null,
+                        languageName:null,
                         versionNo:null,
                         createTime:null,
                         versionSize:null,
@@ -149,37 +153,58 @@ export default {
             addFormRules: {
                 versionNo: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
             },
-            editableTabsValue: '2',
-            editableTabs: [
-                {
-                title: '中文(中国)',
-                name: '1',
-                }
-            ],
+            editableTabsValue: 'zh-cn',
+            editableTabs: [{
+                title:'中文(中国)',
+                name:'zh-cn',
+                dsc:'1.优化系统\r\n2.修复错误选择【立即安装】，设备将重启并进入升级模式，整个过程需花费几分钟时间，请您在此期间不要做任何操作，以免造成升级失败。'
+            }],
             tabIndex: 2
         };
     },
     created() {
-        this.getProjectList();
+        
         if(this.isEdit){
             this.getParam()
+        }else{
+            this.addForm = Object.assign({},baseForm);
+            this.getProjectList();
         }
     },
+    watch:{
+       '$route':"getParam" 
+    },
     methods: {
+
          
          //页面初始化
-        getParam(){
+       async getParam(){
             const param=this.$route.query;
             this.versionId=param.versionId;
-            this.versionInfoFun(this.versionId)
+            this.editableTabs=[]
+            if(this.versionId==null){
+                console.log('没有版本id')
+                return
+            }
+            const {data:res}= await getversionInfo(this.versionId)
+            // console.log('版本信息详情',res)
+            if(res.msg!='success'){
+                return this.$message.error('获取版本失败',res.msg)
+            }
+            this.addForm=res.data
+            this.checkList=[]
+            for (let i = 0; i < this.addForm.languageVOS.length; i++) {
+                this.editableTabs.push({ title: this.addForm.languageVOS[i].languageName, name: this.addForm.languageVOS[i].languageCode+"",dsc:this.addForm.languageVOS[i].dsc });
+                this.checkList.push(this.addForm.languageVOS[i].languageName)//勾选已有的数据
+            }
+            this.editableTabsValue=res.data.languageVOS[0].languageCode
+
         },
         
         resetForm(formName) {
             this.$refs[formName].resetFields();
         },
-        checkBoxClosed() {
-             this.$refs.languageRef.resetFields()
-        },
+    
         // 点击按钮，添加新版本
         addOrUpdateVersion(formName) {
             this.$refs.addFormRef.validate(async valid => {
@@ -218,22 +243,13 @@ export default {
              const { data: res }=await getAllLanguages()
              console.log('返回语言列表',res)
              if(res.code!=0){
-                this.$message.error('选择原因失败:'+res.msg);
+                this.$message.error('选择语言失败:'+res.msg);
              }
              this.languages=res.data
-             console.log("语言",this.languages)
-
 
         },
 
         addLanguages(languages) {
-            let newTabName = languages[0].languageName;
-            this.editableTabs.push({
-                title: newTabName,
-                name: newTabName,
-                content: languages.defaultDsc
-            });
-            this.editableTabsValue = newTabName;
             this.addDialogVisible=true
             this.chooseLanguages();
       },
@@ -274,17 +290,48 @@ export default {
                 });
         },
         async versionInfoFun(versionId){
+            this.editableTabs=[]
             if(versionId==null){
-                console.log('没有版本id')
                 return
             }
             const {data:res}= await getversionInfo(versionId)
-            console.log('版本信息详情',res)
             if(res.code!=0){
                 return this.$message.error('获取版本失败',res.msg)
             }
+            
             this.addForm=res.data
-        }
+            for (let i = 0; i < res.data.languageVOS.length; i++) {
+                this.editableTabs.push({ title: res.data.languageVOS[i].languageName, name: res.data.languageVOS[i].languageCode+"",dsc:res.data.languageVOS[i].dsc });
+            }
+        },
+        handleCheckedLanguagesChange(checkList){
+            this.addDialogVisible=false
+            this.editableTabs=[]
+            for (let index = 0; index < this.checkList.length; index++) {
+                let  checked = this.checkList[index];
+                //勾选值已存在数据库里
+                for (let index = 0; index < this.languages.length; index++) {
+                    let language = this.languages[index];
+                    if(language.languageName===checked){
+                        let isExist=false;
+                        for (let index = 0; index <  this.addForm.languageVOS.length; index++) {
+                            let lvo = this.addForm.languageVOS[index];
+                            if(lvo.languageName===checked){//勾选值在数据库里，还显示原来的数据
+                               this.editableTabs.push({ title: lvo.languageName, name:lvo.languageCode, dsc:lvo.dsc })
+                               isExist=true
+                          
+                            }
+                        }
+                        if(!isExist){
+                            this.editableTabs.push({ title: language.languageName, name:language.languageCode,dsc:language.defaultDsc });
+                        }
+                    }
+                }
+                console.log('editableTabs**********',this.editableTabs)
+                this.editableTabsValue=this.editableTabs[this.editableTabs.length-1].name
+                 console.log('editableTabsValue**********',this.editableTabsValue)
+            }
+        },
     },
   
 };
