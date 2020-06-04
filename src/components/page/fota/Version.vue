@@ -83,7 +83,7 @@ const baseForm={
                 projectName:null,
                 versionSize:'MB',
                 releaseTime:new Date,
-                languageVOS:[
+                languages:[
                     {
                         languageCode:'zh-cn',
                         languageName:null,
@@ -136,7 +136,7 @@ export default {
                 versionNo:null,
                 createTime:null,
                 projectName:null,
-                languageVOS:[
+                languages:[
                     {
                         languageCode:null,
                         languageName:null,
@@ -193,11 +193,11 @@ export default {
             }
             this.addForm=res.data
             this.checkList=[]
-            for (let i = 0; i < this.addForm.languageVOS.length; i++) {
-                this.editableTabs.push({ title: this.addForm.languageVOS[i].languageName, name: this.addForm.languageVOS[i].languageCode+"",dsc:this.addForm.languageVOS[i].dsc });
-                this.checkList.push(this.addForm.languageVOS[i].languageName)//勾选已有的数据
+            for (let i = 0; i < this.addForm.languages.length; i++) {
+                this.editableTabs.push({ title: this.addForm.languages[i].languageName, name: this.addForm.languages[i].languageCode+"",dsc:this.addForm.languages[i].dsc });
+                this.checkList.push(this.addForm.languages[i].languageName)//勾选已有的数据
             }
-            this.editableTabsValue=res.data.languageVOS[0].languageCode
+            this.editableTabsValue=res.data.languages[0].languageCode
 
         },
         
@@ -300,8 +300,8 @@ export default {
             }
             
             this.addForm=res.data
-            for (let i = 0; i < res.data.languageVOS.length; i++) {
-                this.editableTabs.push({ title: res.data.languageVOS[i].languageName, name: res.data.languageVOS[i].languageCode+"",dsc:res.data.languageVOS[i].dsc });
+            for (let i = 0; i < res.data.languages.length; i++) {
+                this.editableTabs.push({ title: res.data.languages[i].languageName, name: res.data.languages[i].languageCode+"",dsc:res.data.languages[i].dsc });
             }
         },
         handleCheckedLanguagesChange(checkList){
@@ -314,8 +314,8 @@ export default {
                     let language = this.languages[index];
                     if(language.languageName===checked){
                         let isExist=false;
-                        for (let index = 0; index <  this.addForm.languageVOS.length; index++) {
-                            let lvo = this.addForm.languageVOS[index];
+                        for (let index = 0; index <  this.addForm.languages.length; index++) {
+                            let lvo = this.addForm.languages[index];
                             if(lvo.languageName===checked){//勾选值在数据库里，还显示原来的数据
                                this.editableTabs.push({ title: lvo.languageName, name:lvo.languageCode, dsc:lvo.dsc })
                                isExist=true
