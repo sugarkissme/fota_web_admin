@@ -13,16 +13,16 @@
                     <el-input type="text" v-model="addForm.versionNo" placeholder="版本号" :readonly="isEdit"></el-input>
                 </el-form-item>
                 <el-form-item label="项目："  label-width='100px' prop="projectName"   >
-                       <el-select   v-model="addForm.projectName"   :disabled="isEdit"  :filterable="true"   clearable>
-                            <el-option  v-for="item in projectlist"  :key="item.value"  :label="item.label"  :value="item.label"   >
+                       <el-select   v-model="addForm.projectName"    :disabled="isEdit"  :filterable="true"  @change="choosePorject($event)"  clearable>
+                            <el-option  v-for="item in projectlist"  :key="item.projectName"  :label="item.projectName"  :value="item.id"   >
                             </el-option>
                         </el-select>
                 </el-form-item>
                 <el-form-item label="版本大小：" label-width='100px' style="width: 300px"  prop="versionSize">
                         <el-input v-model="addForm.versionSize" > </el-input>
                 </el-form-item>
-                 <el-form-item label="发布日期：" label-width='100px' style="width: 300px"  prop="releaseTime">
-                     <el-date-picker   type="date"  v-model="addForm.releaseTime"   value-format="yyyy-MM-dd"   style="width: 100%;"></el-date-picker>
+                 <el-form-item label="发布日期：" label-width='100px' style="width: 300px"  prop="releaseTime" >
+                     <el-date-picker   type="date"  v-model="addForm.releaseTime"      style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <div style="margin-bottom: 20px;">
                     <el-button size="small" @click="addLanguages(languages)" >
@@ -31,7 +31,7 @@
                 </div>
                 <!-- -->
                 <el-tabs   v-model="editableTabsValue" type="card"  @tab-remove="removeTab"  :closable="editableTabs.length>1">
-                    <el-tab-pane    v-for="(item, index) in editableTabs"    :key="item.name"    :label="item.title"    :name="item.name">
+                    <el-tab-pane    v-for="(item, index) in editableTabs"  :key="item.name"    :label="item.title"    :name="item.name">
                        <div>
                             <el-form-item label="升级描述：" label-width='100px'      prop="dsc">
                                     <el-input type='textarea'  v-model="item.dsc"  :autosize="{ minRows: 10, maxRows: 80}" > </el-input>
@@ -47,7 +47,7 @@
             <!-- 底部区域 -->
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="addOrUpdateVersion('addFormRef')">提交</el-button>
-                <el-button v-if="!isEdit" @click="resetForm('addFormRef')">重置</el-button>
+                <!-- <el-button v-if="!isEdit" @click="resetForm('addFormRef')">重置</el-button> -->
             </span>
         </div>
 
@@ -75,14 +75,13 @@
 
 import { getAllLanguages } from '@/api/versionDetail';
 import {getversionInfo} from '@/api/version'
+import dateFormat from "dateformat";
 
 const baseForm={
                 versionId:null,
                 versionNo:null,
                 releaseTime:new Date(),
-                projectName:null,
                 versionSize:'MB',
-                releaseTime:new Date,
                 languages       :[
                     {
                         languageCode:'zh-cn',
@@ -97,7 +96,7 @@ const baseForm={
         }
 
 export default {
-
+ inject:['reload'],//注入reload方法，修改后刷新页面
     props:{
         isEdit:{
             type:Boolean,
@@ -119,7 +118,8 @@ export default {
                 versionId:null,
                 versionNo:null,
                 releaseTime:null,
-                projectName:null,
+                projectId:null,
+                versionSize:null,
                 languages:[
                     {
                         languageCode:null,
@@ -153,13 +153,39 @@ export default {
             editableTabs: [{
                 title:'中文(中国)',
                 name:'zh-cn',
-                dsc:'1.优化系统\r\n2.修复错误选择【立即安装】，设备将重启并进入升级模式，整个过程需花费几分钟时间，请您在此期间不要做任何操作，以免造成升级失败。'
+                dsc:'1.优化系统\r\n2.修复错误选择【立即安装】，设备将重启并进入升级模式，整个过程需花费几分钟时间，请您在此期间不要做任何操作，以免造成升级失败。',
+                languageCode:'zh-cn'
             }],
-            tabIndex: 2
+            tabIndex: 2,
+            pickerOptions: {
+                disabledDate(time) {
+                    return time.getTime() > Date.now();
+                },
+                shortcuts: [{
+                    text: '今天',
+                    onClick(picker) {
+                    picker.$emit('pick', new Date());
+                    }
+                }, {
+                    text: '昨天',
+                    onClick(picker) {
+                    const date = new Date();
+                    date.setTime(date.getTime() - 3600 * 1000 * 24);
+                    picker.$emit('pick', date);
+                    }
+                }, {
+                    text: '一周前',
+                    onClick(picker) {
+                    const date = new Date();
+                    date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                    picker.$emit('pick', date);
+                    }
+                }]
+        }
         };
     },
     created() {
-        
+        this.chooseLanguages()
         if(this.isEdit){
             this.getParam()
         }else{
@@ -168,7 +194,7 @@ export default {
         }
     },
     watch:{
-       '$route':"getParam" 
+       '$route':"getParam"
     },
     methods: {
 
@@ -201,6 +227,10 @@ export default {
         resetForm(formName) {
             this.$refs[formName].resetFields();
         },
+
+        choosePorject(e){
+            this.addForm.projectId=e
+        },
     
         // 点击按钮，添加新版本
         addOrUpdateVersion(formName) {
@@ -218,6 +248,7 @@ export default {
                 return this.$message.info('已经取消提交！');
             }
             this.addForm.languages=[]
+            this.addForm.releaseTime=dateFormat(this.addForm.releaseTime,'yyyy-mm-dd HH:MM:ss')
             for (let index = 0; index < this.editableTabs.length; index++) {
                 const element = this.editableTabs[index];
                 this.addForm.languages.push({dsc:element.dsc,languageCode:element.languageCode,languageName:element.languageName,id:element.id,
@@ -231,14 +262,17 @@ export default {
                     this.$message.error('添加版本失败！' + JSON.stringify(res.msg));
                 }else{
                     this.$message.success('修改成功')
+                    this.reload()
                 }
             }else{
                 const { data: res } = await this.$http.post('/version/create', this.addForm);
-                // this.$refs.addFormRef.resetFields()
+                
                 if (res.code !== 0) {
                     this.$message.error('添加版本失败！' + JSON.stringify(res.msg));
                 }else{
-                    this.$message.success('修改成功')
+                    this.$refs.addFormRef.resetFields()
+                    this.$message.success('添加版本成功')
+                    this.reload()
                 }
             }
             });
@@ -289,7 +323,7 @@ export default {
                     this.projectlist = [];
                     let projectlist = res.data.list;
                     for (let i = 0; i < projectlist.length; i++) {
-                        this.projectlist.push({ label: projectlist[i].projectName, value: projectlist[i].id });
+                        this.projectlist.push({ projectName: projectlist[i].projectName, id: projectlist[i].id });
                     }
                 });
         },
@@ -338,6 +372,10 @@ export default {
                  console.log('editableTabsValue**********',this.editableTabsValue)
             }
         },
+        init(){
+            this.editableTabsValue='zh-cn'
+        }
+         
     },
   
 };

@@ -221,6 +221,7 @@ const defaultListQuery = {
 };
 
 export default {
+    inject:['reload'],//注入reload方法刷新页面
     data() {
         return {
             // 查询参数对象
