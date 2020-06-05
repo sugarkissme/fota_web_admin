@@ -6,14 +6,16 @@
             <el-breadcrumb-item>版本控制</el-breadcrumb-item>
         </el-breadcrumb>
         <div class="app-container">
+    
+         <el-card class="filter-container" shadow="never">
             <!-- 内容主体区域 -->
             <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
                 
-                <el-form-item label="版本号"  label-width='100px' prop="versionNo" style="width :100%">
-                    <el-input type="text" v-model="addForm.versionNo" placeholder="版本号" :readonly="isEdit"></el-input>
+                <el-form-item label="版本号："  label-width='100px' prop="versionNo" style="width :100%">
+                    <el-input type="text" :disabled="isEdit" v-model="addForm.versionNo" placeholder="版本号" ></el-input>
                 </el-form-item>
-                <el-form-item label="项目："  label-width='100px' prop="projectName"   >
-                       <el-select   v-model="addForm.projectName"    :disabled="isEdit"  :filterable="true"  @change="choosePorject($event)"  clearable>
+                <el-form-item label="项目："  label-width='100px'  prop="projectName"   >
+                       <el-select :disabled="isEdit"  v-model="addForm.projectName" style="width :100%"    :filterable="true"  @change="choosePorject($event)"  clearable>
                             <el-option  v-for="item in projectlist"  :key="item.projectName"  :label="item.projectName"  :value="item.id"   >
                             </el-option>
                         </el-select>
@@ -24,6 +26,7 @@
                  <el-form-item label="发布日期：" label-width='100px' style="width: 300px"  prop="releaseTime" >
                      <el-date-picker   type="date"  v-model="addForm.releaseTime"      style="width: 100%;"></el-date-picker>
                 </el-form-item>
+       
                 <div style="margin-bottom: 20px;">
                     <el-button size="small" @click="addLanguages(languages)" >
                          选择语言
@@ -39,15 +42,12 @@
                         </div>
                     </el-tab-pane>
                 </el-tabs>
-                 
-
-               
                 
             </el-form>
+         </el-card>
             <!-- 底部区域 -->
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="addOrUpdateVersion('addFormRef')">提交</el-button>
-                <!-- <el-button v-if="!isEdit" @click="resetForm('addFormRef')">重置</el-button> -->
             </span>
         </div>
 
@@ -148,6 +148,9 @@ export default {
             // 添加表单的验证规则对象
             addFormRules: {
                 versionNo: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
+                versionSize: [{ required: true, message: '请输入版本大小', trigger: 'blur' }],
+                releaseTime: [{ required: true, message: '请输入发布日期', trigger: 'blur' }],
+                projectName: [{ required: true, message: '请输选择项目', trigger: 'blur' }],
             },
             editableTabsValue: 'zh-cn',
             editableTabs: [{
@@ -156,36 +159,10 @@ export default {
                 dsc:'1.优化系统\r\n2.修复错误选择【立即安装】，设备将重启并进入升级模式，整个过程需花费几分钟时间，请您在此期间不要做任何操作，以免造成升级失败。',
                 languageCode:'zh-cn'
             }],
-            tabIndex: 2,
-            pickerOptions: {
-                disabledDate(time) {
-                    return time.getTime() > Date.now();
-                },
-                shortcuts: [{
-                    text: '今天',
-                    onClick(picker) {
-                    picker.$emit('pick', new Date());
-                    }
-                }, {
-                    text: '昨天',
-                    onClick(picker) {
-                    const date = new Date();
-                    date.setTime(date.getTime() - 3600 * 1000 * 24);
-                    picker.$emit('pick', date);
-                    }
-                }, {
-                    text: '一周前',
-                    onClick(picker) {
-                    const date = new Date();
-                    date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-                    picker.$emit('pick', date);
-                    }
-                }]
-        }
         };
     },
     created() {
-        this.chooseLanguages()
+        this.chooseLanguages
         if(this.isEdit){
             this.getParam()
         }else{
@@ -205,7 +182,6 @@ export default {
             this.versionId=param.versionId;
             this.editableTabs=[]
             if(this.versionId==null){
-                console.log('没有版本id')
                 return
             }
             const {data:res}= await getversionInfo(this.versionId)
@@ -223,11 +199,7 @@ export default {
             this.editableTabsValue=res.data.languages[0].languageCode
 
         },
-        
-        resetForm(formName) {
-            this.$refs[formName].resetFields();
-        },
-
+        //事件绑定
         choosePorject(e){
             this.addForm.projectId=e
         },
@@ -315,8 +287,6 @@ export default {
                 })
                 .then(res => {
                     res = res.data;
-                    // console.log('返回结果',res)
-                    //      console.log('项目列表查询',res.data.list)
                     if (res.code !== 0) {
                         return this.$message.error('获取项目列表失败！');
                     }
@@ -359,7 +329,6 @@ export default {
                             if(lvo.languageName===checked){//勾选值在数据库里，还显示原来的数据
                                this.editableTabs.push({ title: lvo.languageName, name:lvo.languageCode, dsc:lvo.dsc,id:lvo.id,languageName:lvo.languageName,languageCode:lvo.languageCode })
                                isExist=true
-                          
                             }
                         }
                         if(!isExist){
@@ -367,9 +336,9 @@ export default {
                         }
                     }
                 }
-                console.log('editableTabs**********',this.editableTabs)
+                // console.log('editableTabs**********',this.editableTabs)
                 this.editableTabsValue=this.editableTabs[this.editableTabs.length-1].name
-                 console.log('editableTabsValue**********',this.editableTabsValue)
+                //  console.log('editableTabsValue**********',this.editableTabsValue)
             }
         },
         init(){
