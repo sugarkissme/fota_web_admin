@@ -79,16 +79,16 @@ import {getversionInfo} from '@/api/version'
 const baseForm={
                 versionId:null,
                 versionNo:null,
-                createTime:new Date(),
+                releaseTime:new Date(),
                 projectName:null,
                 versionSize:'MB',
                 releaseTime:new Date,
-                languages:[
+                languages       :[
                     {
                         languageCode:'zh-cn',
                         languageName:null,
                         versionNo:null,
-                        createTime:null,
+                        releaseTime:null,
                         versionSize:'MB',
                         dsc:null,
                         id:null
@@ -115,8 +115,23 @@ export default {
                 pageSize: 20
             },
             projectlist:[],
-            // 添加项目的表单数据
-            addForm:  Object.assign({},baseForm)  ,
+            addForm: {
+                versionId:null,
+                versionNo:null,
+                releaseTime:null,
+                projectName:null,
+                languages:[
+                    {
+                        languageCode:null,
+                        languageName:null,
+                        versionNo:null,
+                        releaseTime:null,
+                        versionSize:null,
+                        dsc:null,
+                        id:null
+                    }
+                ]
+            },
             checkList:['中文(中国)'],
             languages: [
                 {   
@@ -130,25 +145,6 @@ export default {
                 }
                 
             ],
-            //版本信息
-            versionInfo:{
-                versionId:null,
-                versionNo:null,
-                createTime:null,
-                projectName:null,
-                languages:[
-                    {
-                        languageCode:null,
-                        languageName:null,
-                        versionNo:null,
-                        createTime:null,
-                        versionSize:null,
-                        dsc:null,
-                        id:null
-                    }
-                ]
-
-            },
             // 添加表单的验证规则对象
             addFormRules: {
                 versionNo: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
@@ -194,7 +190,8 @@ export default {
             this.addForm=res.data
             this.checkList=[]
             for (let i = 0; i < this.addForm.languages.length; i++) {
-                this.editableTabs.push({ title: this.addForm.languages[i].languageName, name: this.addForm.languages[i].languageCode+"",dsc:this.addForm.languages[i].dsc });
+                this.editableTabs.push({ title: this.addForm.languages[i].languageName, name: this.addForm.languages[i].languageCode+"",dsc:this.addForm.languages[i].dsc,
+                id: this.addForm.languages[i].id,languageName: this.addForm.languages[i].languageName,languageCode: this.addForm.languages[i].languageCode});
                 this.checkList.push(this.addForm.languages[i].languageName)//勾选已有的数据
             }
             this.editableTabsValue=res.data.languages[0].languageCode
@@ -220,6 +217,13 @@ export default {
             if (confirmResult !== 'confirm') {
                 return this.$message.info('已经取消提交！');
             }
+            this.addForm.languages=[]
+            for (let index = 0; index < this.editableTabs.length; index++) {
+                const element = this.editableTabs[index];
+                this.addForm.languages.push({dsc:element.dsc,languageCode:element.languageCode,languageName:element.languageName,id:element.id,
+                versionSize:this.addForm.versionSize,versionNo:this.addForm.versionNo,releaseTime:this.addForm.releaseTime
+                })
+            }
             if(this.isEdit){
                  const { data: res } = await this.$http.post('/version/update', this.addForm);
                 
@@ -230,7 +234,7 @@ export default {
                 }
             }else{
                 const { data: res } = await this.$http.post('/version/create', this.addForm);
-                this.$refs.addFormRef.resetFields()
+                // this.$refs.addFormRef.resetFields()
                 if (res.code !== 0) {
                     this.$message.error('添加版本失败！' + JSON.stringify(res.msg));
                 }else{
@@ -300,8 +304,10 @@ export default {
             }
             
             this.addForm=res.data
-            for (let i = 0; i < res.data.languages.length; i++) {
-                this.editableTabs.push({ title: res.data.languages[i].languageName, name: res.data.languages[i].languageCode+"",dsc:res.data.languages[i].dsc });
+            for (let i = 0; i < res.data.languages      .length; i++) {
+                this.editableTabs.push({ title: res.data.languages[i].languageName, name: res.data.languages[i].languageCode+"",dsc:res.data.languages[i].dsc,id:res.data.languages[i].id,languageCode:res.data.languages[i].languageCode,
+                languageName:res.data.languages[i].languageName
+                });
             }
         },
         handleCheckedLanguagesChange(checkList){
@@ -314,16 +320,16 @@ export default {
                     let language = this.languages[index];
                     if(language.languageName===checked){
                         let isExist=false;
-                        for (let index = 0; index <  this.addForm.languages.length; index++) {
-                            let lvo = this.addForm.languages[index];
+                        for (let index = 0; index <  this.addForm.languages     .length; index++) {
+                            let lvo = this.addForm.languages        [index];
                             if(lvo.languageName===checked){//勾选值在数据库里，还显示原来的数据
-                               this.editableTabs.push({ title: lvo.languageName, name:lvo.languageCode, dsc:lvo.dsc })
+                               this.editableTabs.push({ title: lvo.languageName, name:lvo.languageCode, dsc:lvo.dsc,id:lvo.id,languageName:lvo.languageName,languageCode:lvo.languageCode })
                                isExist=true
                           
                             }
                         }
                         if(!isExist){
-                            this.editableTabs.push({ title: language.languageName, name:language.languageCode,dsc:language.defaultDsc });
+                            this.editableTabs.push({ title: language.languageName, name:language.languageCode,dsc:language.defaultDsc,id:null,languageCode:language.languageCode,languageName:language.languageName });
                         }
                     }
                 }
