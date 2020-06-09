@@ -146,9 +146,9 @@
                 <el-table-column label="项目" prop="projectName" width="330px"></el-table-column>
                 <el-table-column label="IMEI" prop="imei"></el-table-column>
                 <el-table-column label="最近修改时间" prop="updateTime"></el-table-column>
-                 <el-table-column label="是否启用" prop="useFlag"  > 
+                 <el-table-column label="是否启用" prop="status"  > 
                     <template slot-scope="scope">
-                        <el-switch v-model="scope.row.useFlag" active-value="1" inactive-value="0" @change="handleUpdateUseFlag(scope.row)"></el-switch>
+                        <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" @change="handleUpdateStatus(scope.row)"></el-switch>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="260px">
@@ -219,10 +219,7 @@ export default {
             delFormRules: {
                 projectId: [{ required: true, message: '请选项目', trigger: 'blur' }],
             },
-            updateUseFlag:{
-                id:null,
-                useFlag:null
-            }
+        
         };
     },
     created() {
@@ -336,13 +333,13 @@ export default {
             
         },
 
-           async handleUpdateUseFlag(row){
-                const {data:res}=  await resetStatusById(row.id,row.useFlag)
+           async handleUpdateStatus(row){
+                const {data:res}=  await resetStatusById(row.id,row.status)
                 if(res.code!=0){
-                    if(row.useFlag===0){
-                    row.useFlag=1
+                    if(row.status===0){
+                    row.status=1
                     }else{
-                    row.useFlag=0
+                    row.status=0
                     }
                     return this.$message.error(res.msg)
                 }
