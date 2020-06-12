@@ -109,6 +109,7 @@
           <el-table-column label="设计公司" prop="designName" ></el-table-column>
           <el-table-column label="品牌商" prop="brandName" ></el-table-column>
           <el-table-column label="OEM" prop="oem" ></el-table-column>
+          <el-table-column label="productName" prop="productName" ></el-table-column>
           <el-table-column label="LANGUAGE" prop="language" ></el-table-column>
           <el-table-column label="OPERATOR" prop="operator" ></el-table-column>
           <el-table-column label="创建时间" prop="createTime" >

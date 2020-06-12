@@ -9,15 +9,6 @@
     <div class="app-container">
       <el-card class="filter-container" shadow="never">
         <span>项目：{{projectName}}  升级版本号:{{updateVersionNo}}</span>
-          <div>
-            <el-button 
-              style="float: right"
-              @click="getProjectList()"
-              type="primary"
-              size="small">
-              查询结果
-            </el-button>
-          </div>
       <div style="margin-top: 15px">
        
       </div>
@@ -31,7 +22,7 @@
           <el-table-column label="版本详情ID" prop="id" width="100px" ></el-table-column>
           <el-table-column label="源版本号" prop="oldVersionNo" width="385px" ></el-table-column>
           <el-table-column label="文件名" prop="fileName" width="250px" ></el-table-column>
-          <el-table-column label="大小" prop="fileSize" width="90px" ></el-table-column>
+          <el-table-column label="大小" prop="fileSize" width="120px" ></el-table-column>
           <el-table-column label="上传升级包" width="120px">
             <template slot-scope="scope">
               <div>
@@ -41,18 +32,18 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="升级策略" prop="strategy"  width="100px" >
+          <el-table-column label="升级策略" prop="strategy"  width="120px" >
               <template slot-scope="scope" >
                     <el-button  :disabled="scope.row.status===1||scope.row.status===0" type="text" size="mini"  @click="versionStrategy(scope.row)"> 定制配置</el-button>
               </template>
           </el-table-column>
-          <el-table-column label="当前状态"  width="120px" prop="status" >
+          <el-table-column label="当前状态"  width="130px" prop="status" >
                <template slot-scope="scope" >
                  <span>{{computeStatus(scope.row.status)}}</span>
               </template>
           </el-table-column>
-          <el-table-column label="发布时间" prop="releaseTime"  width="160px" ></el-table-column>
-          <el-table-column label="是否启用" prop="useFlag" width="80px" > 
+          <el-table-column label="发布时间" prop="releaseTime"  width="190px" ></el-table-column>
+          <el-table-column label="是否启用" prop="useFlag" width="110px" > 
             <template slot-scope="scope">
               <el-switch v-model="scope.row.useFlag" :active-value="1" :inactive-value="0" @change="handleUpdateUseFlag(scope.row)"></el-switch>
             </template>
@@ -251,6 +242,7 @@ export default {
         
         },
         ossUploadUrl:'/aliyun/oss/upload',
+        // ossUploadUrl:'/aliyun/oss/uploadToLocal',
         maxCount:1
        
         
