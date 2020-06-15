@@ -241,7 +241,7 @@ export default {
         dataObj: {
         
         },
-        ossUploadUrl:'/aliyun/oss/upload',
+        ossUploadUrl:'api/aliyun/oss/upload',
         // ossUploadUrl:'/aliyun/oss/uploadToLocal',
         maxCount:1
        
