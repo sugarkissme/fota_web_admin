@@ -12,6 +12,7 @@ import 'babel-polyfill';
 import axios from 'axios'
 Vue.prototype.$http = axios
 axios.defaults.withCredentials =true
+axios.defaults.baseURL='/api'
 Vue.config.productionTip = false;
 Vue.use(VueI18n);
 
