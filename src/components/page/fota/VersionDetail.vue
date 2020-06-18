@@ -23,13 +23,19 @@
           <el-table-column label="源版本号" prop="oldVersionNo" width="385px" ></el-table-column>
           <el-table-column label="文件名" prop="fileName" width="250px" ></el-table-column>
           <el-table-column label="大小" prop="fileSize" width="120px" ></el-table-column>
-          <el-table-column label="上传升级包" width="120px">
+          <el-table-column label="上传升级包" width="350px">
             <template slot-scope="scope">
               <div>
-                <el-upload :action="ossUploadUrl" :data="dataObj" list-type="picture"  :before-upload="beforeUpload" :on-remove="handleRemove" :on-success="handleUploadSuccess" :on-preview="handlePreview" :limit="maxCount" accept=".zip" >
-                     <i class="el-icon-upload" @click="getUploadFileData(scope.row)">上传文件</i>
-                </el-upload>
-              </div>
+                    <uploader   browse_button="browse_button"  :url="server_config.url+'/BigFile/'"   chunk_size="2MB"   :max_retries="1"   :filters="{prevent_duplicates:true}"   :FilesAdded="filesAdded"   :BeforeUpload="beforeUpload"   :Error="error"   :UploadComplete="uploadComplete"   @inputUploader="inputUploader" />
+                    <el-button type="primary" id="browse_button" size='mini' >选择文件</el-button>
+                    <el-button :disabled="uploading" type="danger"size='mini'  @click="uploadStart()">上传</el-button>
+                    <el-button :disabled="!uploading" type="warring"  size='mini' @click="uploadStop()">暂停</el-button>
+                    <span v-if="scope.row.upStatus === -1">正在计算MD5</span>
+                    <span v-if="scope.row.upStatus === 1 && scope.row.percent === 0">MD5计算完成，准备上传</span>
+                    <span v-if="scope.row.upStatus === 4" style="color: brown">上传失败</span>
+                    <span v-if="scope.row.upStatus === 5" style="color: chartreuse">已上传</span>
+                    <el-progress v-if="scope.row.upStatus === 2 || scope.row.upStatus === 1 && scope.row.percent > 0" :text-inside="true" :stroke-width="20" :percentage="scope.row.percent"></el-progress>  
+                </div>
             </template>
           </el-table-column>
           <el-table-column label="升级策略" prop="strategy"  width="120px" >
@@ -171,7 +177,8 @@
 <script>
 import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail'
 import {getVersionStrategyByVersionDetailId,updateVersionDetailStrategy} from '@/api/versionDetailStrategy'
-
+  import FileMd5 from '@/models/file-md5.js'
+  import Uploader from '@/components/upload/Uploader'
 const defaultListQuery = {
         pageNo: 1,
         pageSize: 20
@@ -243,15 +250,43 @@ export default {
         },
         ossUploadUrl:'api/aliyun/oss/upload',
         // ossUploadUrl:'/aliyun/oss/uploadToLocal',
-        maxCount:1
+        maxCount:1,
        
-        
+        //plupload文件上传
+          server_config: this.global.server_config,
+        up: {},
+        files:[],
+        tableData: [],
+        uploading: false
 
     }
+  },
+  components: {
+      'uploader': Uploader
   },
   created() {
     this.getParam()
     this.getVersionDetailList()
+  },
+  watch: {
+      files: {
+        handler() {
+          this.tableData = [];
+          this.files.forEach((e) => {
+            this.tableData.push({
+              name: e.name,
+              size: e.size,
+              upStatus: e.upStatus,
+              id: e.id,
+              percent: e.percent
+            });
+          });
+        },
+        deep: true
+      }
+  },
+  components: {
+      'uploader': Uploader
   },
   methods: {
       
@@ -423,6 +458,45 @@ export default {
         this.addDialogVisible = false
       })
     },
+
+    //plupload文件上传
+      inputUploader(up) {
+        console.log('up对象',up)
+        debugger
+        this.up = up;
+        this.files = up.files;
+          console.log('files******',this.files)
+      },
+      filesAdded(up, files) {
+        files.forEach((f) => {
+          f.upStatus = -1;
+          FileMd5(f.getNative(), (e, md5) => {
+            f["md5"] = md5;
+            f.upStatus = 1;
+          });
+        });
+      },
+      deleteFile(id) {
+        let file = this.up.getFile(id);
+        this.up.removeFile(file);
+      },
+      beforeUpload(up, file) {
+        up.setOption("multipart_params", {"size":file.size,"md5":file.md5});
+      },
+      uploadStart() {
+        this.uploading = true;
+        this.up.start();
+      },
+      uploadStop() {
+        this.uploading = false;
+        this.up.stop();
+      },
+      error() {
+        this.uploading = false;
+      },
+      uploadComplete() {
+        this.uploading = false;
+      }
   }
 }
 </script>

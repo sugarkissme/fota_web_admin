@@ -10,10 +10,12 @@ import './assets/css/icon.css';
 import './components/common/directives';
 import 'babel-polyfill';
 import axios from 'axios'
+import global from './Global'
 Vue.prototype.$http = axios
 axios.defaults.withCredentials =true
 axios.defaults.baseURL='/api'
 Vue.config.productionTip = false;
+Vue.prototype.global = global;
 Vue.use(VueI18n);
 
 const i18n = new VueI18n({
