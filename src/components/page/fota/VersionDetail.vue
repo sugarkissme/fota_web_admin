@@ -26,9 +26,9 @@
           <el-table-column label="上传升级包" width="350px">
             <template slot-scope="scope">
               <div>
-                    <uploader   browse_button="browse_button"  :url="server_config.url+'/BigFile/'"   chunk_size="2MB"   :max_retries="1"   :filters="{prevent_duplicates:true}"   :FilesAdded="filesAdded"   :BeforeUpload="beforeUpload"   :Error="error"   :UploadComplete="uploadComplete"   @inputUploader="inputUploader" />
-                    <el-button type="primary" id="browse_button" size='mini' >选择文件</el-button>
-                    <el-button :disabled="uploading" type="danger"size='mini'  @click="uploadStart()">上传</el-button>
+                    <uploader  scope=""  :browse_button="scope.row.id+''"  :url="server_config.url+'/BigFile/'"   chunk_size="2MB"   :max_retries="1"   :filters="{prevent_duplicates:true}"   :FilesAdded="filesAdded"   :BeforeUpload="beforeUpload"   :Error="error"   :UploadComplete="uploadComplete"   @inputUploader="inputUploader" />
+                    <el-button type="primary" :id="scope.row.id" size='mini' >选择文件</el-button>
+                    <el-button :disabled="uploading" type="danger" size='mini'  @click="uploadStart()">上传</el-button>
                     <el-button :disabled="!uploading" type="warring"  size='mini' @click="uploadStop()">暂停</el-button>
                     <span v-if="scope.row.upStatus === -1">正在计算MD5</span>
                     <span v-if="scope.row.upStatus === 1 && scope.row.percent === 0">MD5计算完成，准备上传</span>
@@ -268,26 +268,7 @@ export default {
     this.getParam()
     this.getVersionDetailList()
   },
-  watch: {
-      files: {
-        handler() {
-          this.tableData = [];
-          this.files.forEach((e) => {
-            this.tableData.push({
-              name: e.name,
-              size: e.size,
-              upStatus: e.upStatus,
-              id: e.id,
-              percent: e.percent
-            });
-          });
-        },
-        deep: true
-      }
-  },
-  components: {
-      'uploader': Uploader
-  },
+
   methods: {
       
       getParam(){
@@ -378,30 +359,7 @@ export default {
   handlePreview(file) {
     this.dialogVisible = true;
   },
-  beforeUpload(file) {
-
-    let types = ['application/x-zip-compressed','application/x-zip','application/zip'];
-    console.log('文件类型',file.type)
-        const isImage = types.includes(file.type);
-
-        const isLtSize = file.size / 1024 / 1024 <= 1024;
-
-        if (!isImage) {
-
-          this.$message.error('上传文件只能是zip格式!');
-
-          return false;
-
-        }
-        if (!isLtSize) {
-
-          this.$message.error('上传文件不能超过 1G!');
-
-          return false;
-        }
-
-        return true;
-    },
+ 
       //上传文件成功后回调
     async handleUploadSuccess(res, file) {
       console.log('--res---',res)
