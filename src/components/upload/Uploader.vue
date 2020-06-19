@@ -147,8 +147,6 @@
     },
     watch: {
       up(val) {
-        debugger
-      console.log("这是啥val",val)
         this.$emit('inputUploader', val);
       }
     },

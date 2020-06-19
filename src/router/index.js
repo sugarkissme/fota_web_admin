@@ -75,6 +75,13 @@ export default new Router({
                     hidden:true
                 },
                 { 
+                    path:'/versionStopUpload',
+                    name:'versionStopUploadHome',
+                    component: () => import('@/components/upload/StopUpload'),
+                    meta:{title:'上传版本大文件'},
+                    hidden:true
+                },
+                { 
                     path:'/versionUpdate',
                     name:'versionHomeUpdate',
                     component: () => import('@/components/page/fota/VersionUpdate'),

@@ -1,10 +1,23 @@
 <template>
   <div>
+    <!-- 面包屑导航区域 -->
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>版本控制</el-breadcrumb-item>
+      <el-breadcrumb-item>历史版本</el-breadcrumb-item>
+    </el-breadcrumb>
+    <div class="app-container">
+      <el-card class="filter-container" shadow="never">
+        <span>您正在上传{{projectName}}项目的文件，从版本{{currentVersionNo}} 升级到{{updateVersionNo}} </span>
+      <div style="margin-top: 15px">
+      </div>
+    </el-card>
+    </div>
     <uploader
       browse_button="browse_button"
       :url="server_config.url+'/BigFile/'"
       chunk_size="2MB"
-      :max_retries="3"
+      :max_retries="1"
       :filters="{prevent_duplicates:true}"
       :FilesAdded="filesAdded"
       :BeforeUpload="beforeUpload"
@@ -12,10 +25,9 @@
       :UploadComplete="uploadComplete"
       @inputUploader="inputUploader"
     />
-    <el-tag type="warning">自动重传三次</el-tag>
     <br/>
     <br/>
-    <el-button type="primary" id="browse_button">选择多个文件</el-button>
+    <el-button type="primary" id="browse_button">选择文件</el-button>
     <br/>
     <el-table
       :data="tableData"
@@ -35,8 +47,8 @@
       <el-table-column
         label="状态">
         <template slot-scope="scope">
-          <span v-if="scope.row.status === -1">正在计算MD5</span>
-          <span v-if="scope.row.status === 1 && scope.row.percent === 0">MD5计算完成，准备上传</span>
+          <span v-if="scope.row.status === -1">正在加载数据</span>
+          <span v-if="scope.row.status === 1 && scope.row.percent === 0">加载完成请上传</span>
           <span v-if="scope.row.status === 4" style="color: brown">上传失败</span>
           <span v-if="scope.row.status === 5" style="color: chartreuse">已上传</span>
           <el-progress v-if="scope.row.status === 2 || scope.row.status === 1 && scope.row.percent > 0" :text-inside="true" :stroke-width="20" :percentage="scope.row.percent"></el-progress>
@@ -56,9 +68,9 @@
 </template>
 
 <script>
-  import FileMd5 from '../models/file-md5.js'
-  import Uploader from './Uploader'
-
+  import FileMd5 from '@/models/file-md5.js'
+  import Uploader from '@/components/upload/Uploader'
+import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail'
   export default {
     name: "StopUpload",
     data() {
@@ -67,7 +79,16 @@
         up: {},
         files:[],
         tableData: [],
-        uploading: false
+        uploading: false,
+        projectName:'',
+        currentVersionNo:'',
+        updateVersionNo:'',
+        updateVersionDetail:{
+          detailId:null,
+          status:null,
+          fileName:null,
+          fileSize:null,
+        },
       }
     },
     components: {
@@ -90,6 +111,9 @@
         deep: true
       }
     },
+  created(){
+    this.getParam();//重新调用加载函数
+  },
     methods: {
       inputUploader(up) {
         this.up = up;
@@ -124,8 +148,42 @@
       },
       uploadComplete() {
         this.uploading = false;
-      }
-    }
+        console.log("上产成功")
+        this.handleUpdateVersioStatus();
+        this.deleteFile(this.files[0].id)
+
+
+      },
+      //其他页面跳转过来的参数
+      getParam(){
+        const param=this.$route.query;
+        this.currentVersionId=param.currentVersionId
+        this.currentVersionNo=param.currentVersionNo
+        this.updateVersionNo=param.updateVersionNo
+        this.projectName=param.projectName
+        console.log("上产文件接收的参数",param)
+      },
+        async handleUpdateVersioStatus(){
+           this.updateVersionDetail.detailId=this.currentVersionId
+          this.updateVersionDetail.status=2,
+          this.updateVersionDetail.fileName=this.tableData[0].name
+          var num=this.tableData[0].size/ 1024 / 1024
+          var flag=false;
+            if(num<0.01){
+              flag=true
+              num=this.tableData[0].size/ 1024
+            }
+          this.updateVersionDetail.fileSize=num.toFixed(2)+""+(flag==true?"Kb":"M")
+          this.updateVersionDetail.fileSize=num.toFixed(2)+""+(flag==true?"Kb":"M")
+          console.log("请求参数updateVersionDetail",this.updateVersionDetail)
+          const {data:res}=  await updateVersionDetailStatus(this.updateVersionDetail)
+          console.log("更新文件",res)
+          if(res.code!=0){
+            return this.$message.error(res.msg)
+          }
+     },
+    },
+   
   }
 </script>
 
