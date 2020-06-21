@@ -50,7 +50,7 @@
           <span v-if="scope.row.status === -1">正在加载数据</span>
           <span v-if="scope.row.status === 1 && scope.row.percent === 0">加载完成请上传</span>
           <span v-if="scope.row.status === 4" style="color: brown">上传失败</span>
-          <span v-if="scope.row.status === 5" style="color: chartreuse">已上传</span>
+          <span v-if="scope.row.status === 5" style="color: blue">上传成功</span>
           <el-progress v-if="scope.row.status === 2 || scope.row.status === 1 && scope.row.percent > 0" :text-inside="true" :stroke-width="20" :percentage="scope.row.percent"></el-progress>
         </template>
       </el-table-column>
@@ -148,9 +148,13 @@ import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail
       },
       uploadComplete() {
         this.uploading = false;
-        console.log("上产成功")
-        this.handleUpdateVersioStatus();
-        this.deleteFile(this.files[0].id)
+        console.log("上传后回调",this.tableData[0].status)
+        if(this.tableData[0].status===5){
+          console.log("上传成功后回调")
+          this.handleUpdateVersioStatus();
+        }else if(this.tableData[0].status===4){}
+        
+
 
 
       },
