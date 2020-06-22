@@ -23,6 +23,7 @@
       :BeforeUpload="beforeUpload"
       :Error="error"
       :UploadComplete="uploadComplete"
+      :FileUploaded="fileUploaded"
       @inputUploader="inputUploader"
     />
     <br/>
@@ -88,6 +89,7 @@ import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail
           status:null,
           fileName:null,
           fileSize:null,
+          downloadUrl:null,
         },
       }
     },
@@ -150,13 +152,16 @@ import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail
         this.uploading = false;
         console.log("上传后回调",this.tableData[0].status)
         if(this.tableData[0].status===5){
-          console.log("上传成功后回调")
           this.handleUpdateVersioStatus();
         }else if(this.tableData[0].status===4){}
-        
-
-
-
+      },
+      //每个次切片文件上产返回值
+      fileUploaded(up,files,info){
+        var res=JSON.parse(info.response)
+        if(res.code===0&&res.data!=null){
+          this.updateVersionDetail.downloadUrl=res.data
+          console.log("上传文件返回URL",res.data)
+        }
       },
       //其他页面跳转过来的参数
       getParam(){
@@ -177,7 +182,6 @@ import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail
               flag=true
               num=this.tableData[0].size/ 1024
             }
-          this.updateVersionDetail.fileSize=num.toFixed(2)+""+(flag==true?"Kb":"M")
           this.updateVersionDetail.fileSize=num.toFixed(2)+""+(flag==true?"Kb":"M")
           console.log("请求参数updateVersionDetail",this.updateVersionDetail)
           const {data:res}=  await updateVersionDetailStatus(this.updateVersionDetail)
