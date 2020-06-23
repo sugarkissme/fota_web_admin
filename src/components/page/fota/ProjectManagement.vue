@@ -12,19 +12,19 @@
             <el-button 
               style="float: right"
               @click="getProjectList()"
-              type="primary"
-              size="small">
+              type="primary" round
+              size="small"> 
               查询结果
             </el-button>
             <el-button
-              type="primary"
+              type="primary" round
               style="float: right;margin-right: 15px"
               @click="handleResetSearch()"
               size="small">
               重置
             </el-button>
             <el-button
-              type="primary"
+              type="primary" round
               style="float: right ;margin-right: 15px"
               class="btn-add"
               @click="addDialogVisible=true"
@@ -119,7 +119,7 @@
           </el-table-column>
           <el-table-column label="操作" width="130px">
             <template slot-scope="scope">
-              <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeById(scope.row.id)"></el-button>
+              <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="removeById(scope.row.id)"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -138,7 +138,7 @@ const defaultListQuery = {
         productName: '',
         designName: '',
         pageNo: 1,
-        pageSize: 20
+        pageSize: 15
   };
 
 export default {
@@ -327,5 +327,13 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style  scoped>
+    .el-pagination {
+         text-align: center; 
+    }
+    .paginnation-container {
+        position: fixed;
+        left: 40%;
+        bottom: 0%
+}
 </style>

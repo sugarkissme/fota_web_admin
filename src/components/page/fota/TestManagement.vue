@@ -13,30 +13,30 @@
                     <el-button
                         style="float: right ;margin-right: 30px"
                         @click="delDialogVisible=true"
-                        type="primary"
-                        size="small"
+                        type="danger" round
+                        size="small" icon="el-icon-delete"
                     >删除指定项目IMEI</el-button>
                     <el-button
-                        type="primary"
+                        type="primary" round
                         style="float: right;margin-right: 30px"
                         @click="addDialogVisible=true"
                         size="small"
                     >添加IMEI</el-button>
                    
                     <el-button
-                        type="primary"
+                        type="primary" round
                         style="float: right;margin-right: 30px"
                         @click="handleResetSearch()"
                         size="small"
                     >批量导入IMEI</el-button>
                    <el-button
-                        type="primary"
+                        type="primary" round
                         style="float: right;margin-right: 30px"
                         @click="handleResetSearch()"
                         size="small"
                     >下载IEMI模板</el-button>
                    <el-button
-                        type="primary"
+                        type="primary" round
                         style="float: right;margin-right: 30px"
                         @click="handleResetSearch()"
                         size="small"
@@ -153,7 +153,7 @@
                 </el-table-column>
                 <el-table-column label="操作" width="260px">
                     <template slot-scope="scope">
-                        <el-button type="warning" icon="el-icon-delete" size="mini" @click="handleDeleteImeiTest(scope.row)">
+                        <el-button type="danger" circle icon="el-icon-delete" size="mini" @click="handleDeleteImeiTest(scope.row)">
                         </el-button>
                     </template>
                 </el-table-column>
@@ -184,7 +184,7 @@ const defaultListQuery = {
     designName: '',
     projectName: '',
     pageNo: 1,
-    pageSize: 30
+    pageSize: 15
 };
 
 export default {
@@ -304,11 +304,11 @@ export default {
 
         handleSizeChange(newSize) {
             this.queryInfo.pageSize = newSize;
-            this.getProjectList();
+            this.getImeiList();
         },
         handleCurrentChange(newPage) {
             this.queryInfo.pageNo = newPage;
-            this.getProjectList();
+            this.getImeiList();
         },
         async handleDeleteImeiTest(row) {
             console.log('----当前------', row);
@@ -412,5 +412,13 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style  scoped>
+.paginnation-container {
+    position: fixed;
+    
+     left: 40%;
+     bottom: 0%
+}
+
+
 </style>

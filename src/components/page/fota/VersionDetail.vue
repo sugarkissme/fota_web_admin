@@ -26,7 +26,7 @@
           <el-table-column label="上传升级包" width="120px">
             <template slot-scope="scope">
               <div>
-                    <el-button type="primary" @click="handleUpLoadBigFile(scope.row)" size='mini' >上传文件</el-button>
+                    <el-button type="primary" round @click="handleUpLoadBigFile(scope.row)" size='mini' >上传<i class="el-icon-upload el-icon--right"></i></el-button>
                 </div>
             </template>
           </el-table-column>
@@ -48,12 +48,12 @@
           </el-table-column>
           <el-table-column label="操作" >
             <template slot-scope="scope">
-              <el-button  v-if="scope.row.status===1" size="mini" disabled>待上传<i class="el-icon--right"></i></el-button>
-              <el-button  v-if="scope.row.status===2" size="mini" @click="handleUpdateVersioStatus(scope.row,4)">测试通过</el-button>
-              <el-button  v-if="scope.row.status===2" size="mini" @click="handleUpdateVersioStatus(scope.row,3)">测试不通过</el-button>
-              <el-button  v-if="scope.row.status===3" size="mini" disabled >测试不通过</el-button>
-              <el-button  v-if="scope.row.status===4" size="mini" @click="handleUpdateVersioStatus(scope.row,5)">发布</el-button>
-              <el-button  v-if="scope.row.status===5" size="mini" @click="handleUpdateVersioStatus(scope.row,2)">取消发布</el-button>
+              <el-button  v-if="scope.row.status===1" size="mini" type="info" round disabled>待上传<i class="el-icon--right"></i></el-button>
+              <el-button  v-if="scope.row.status===2" size="mini" type="success" round @click="handleUpdateVersioStatus(scope.row,4)">测试通过</el-button>
+              <el-button  v-if="scope.row.status===2" size="mini" type="warning" round  @click="handleUpdateVersioStatus(scope.row,3)">测试不通过</el-button>
+              <el-button  v-if="scope.row.status===3" size="mini" type="warning" round  disabled >测试不通过 </el-button>
+              <el-button  v-if="scope.row.status===4" size="mini" type="danger" round  @click="handleUpdateVersioStatus(scope.row,5)">发布</el-button>
+              <el-button  v-if="scope.row.status===5" size="mini" type="danger" round @click="handleUpdateVersioStatus(scope.row,2)">取消发布</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -171,7 +171,7 @@ import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail
 import {getVersionStrategyByVersionDetailId,updateVersionDetailStrategy} from '@/api/versionDetailStrategy'
 const defaultListQuery = {
         pageNo: 1,
-        pageSize: 20
+        pageSize: 15
   }
 
 export default {
@@ -321,6 +321,7 @@ export default {
                         return this.$message(res.msg)
                     }
                     this.versionDetailList=res.data.list;
+                    this.totalSize=res.data.totalSize
                     console.log('返回list',this.versionDetailList)
                 });
      
@@ -422,5 +423,13 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style  scoped>
+    .el-pagination {
+         text-align: center; 
+    }
+    .paginnation-container {
+        position: fixed;
+        left: 40%;
+        bottom: 0%
+}
 </style>

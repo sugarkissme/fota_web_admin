@@ -59,7 +59,7 @@ export default {
                 {
                     icon: 'el-icon-lx-home',
                     index: 'dashboard',
-                    title: '系统首页'
+                    title: '首页'
                 },
                 {
                     icon: 'el-icon-lx-cascades',
@@ -74,7 +74,7 @@ export default {
                             title:'版本管理'
                         },  {
                             index:'testManagement',
-                            title:'测试IMEI管理'
+                            title:'IMEI管理'
                         }
 
                     ]

@@ -1,11 +1,19 @@
 <template>
+  
   <div>
+    
+
     <!-- 面包屑导航区域 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>版本控制</el-breadcrumb-item>
       <el-breadcrumb-item>历史版本</el-breadcrumb-item>
+      <el-breadcrumb-item>
+          <span  v-on:click="back" size='mini' >返回上一层</span>
+      </el-breadcrumb-item>
+       
     </el-breadcrumb>
+  
     <div class="app-container">
       <el-card class="filter-container" shadow="never">
         <span>您正在上传{{projectName}}项目的文件，从版本{{currentVersionNo}} 升级到{{updateVersionNo}} </span>
@@ -28,7 +36,7 @@
     />
     <br/>
     <br/>
-    <el-button type="primary" id="browse_button">选择文件</el-button>
+    <el-button type="primary" round id="browse_button">选择文件</el-button>
     <br/>
     <el-table
       :data="tableData"
@@ -49,7 +57,7 @@
         label="状态">
         <template slot-scope="scope">
           <span v-if="scope.row.status === -1">正在加载数据</span>
-          <span v-if="scope.row.status === 1 && scope.row.percent === 0">加载完成请上传</span>
+          <span v-if="scope.row.status === 1 && scope.row.percent === 0" style="color: orange">加载完成请上传</span>
           <span v-if="scope.row.status === 4" style="color: brown">上传失败</span>
           <span v-if="scope.row.status === 5" style="color: blue">上传成功</span>
           <el-progress v-if="scope.row.status === 2 || scope.row.status === 1 && scope.row.percent > 0" :text-inside="true" :stroke-width="20" :percentage="scope.row.percent"></el-progress>
@@ -63,8 +71,8 @@
       </el-table-column>
     </el-table>
     <br/>
-    <el-button :disabled="uploading" type="danger" @click="uploadStart()">开始上传</el-button>
-    <el-button :disabled="!uploading" type="warring" @click="uploadStop()">暂停上传</el-button>
+    <el-button :disabled="uploading" type="primary"  round @click="uploadStart()">开始上传</el-button>
+    <el-button :disabled="!uploading" type="warring" round @click="uploadStop()">暂停上传</el-button>
   </div>
 </template>
 
@@ -97,6 +105,12 @@ import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail
       'uploader': Uploader
     },
     watch: {
+      '$route'(to,from){
+        this.currentVersionId=this.$route.query.currentVersionId
+        this.currentVersionNo=this.$route.query.currentVersionNo
+        this.updateVersionNo=this.$route.query.updateVersionNo
+        this.projectName=this.$route.query.projectName
+      },
       files: {
         handler() {
           this.tableData = [];
@@ -111,12 +125,17 @@ import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail
           });
         },
         deep: true
-      }
+      },
     },
   created(){
     this.getParam();//重新调用加载函数
   },
     methods: {
+
+       back(){
+        this.$router.go(-1);//返回上一层
+       },
+
       inputUploader(up) {
         this.up = up;
         this.files = up.files;
@@ -165,7 +184,7 @@ import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail
       },
       //其他页面跳转过来的参数
       getParam(){
-        const param=this.$route.query;
+        var param=this.$route.query;
         this.currentVersionId=param.currentVersionId
         this.currentVersionNo=param.currentVersionNo
         this.updateVersionNo=param.updateVersionNo

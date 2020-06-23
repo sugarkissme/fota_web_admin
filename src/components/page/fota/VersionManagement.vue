@@ -12,17 +12,17 @@
                     <el-button
                         style="float: right"
                         @click="getVersionList()"
-                        type="primary"
+                        type="primary" round
                         size="small"
                     >查询结果</el-button>
                     <el-button
-                        type="primary"
+                        type="primary" round
                         style="float: right;margin-right: 15px"
                         @click="handleResetSearch()"
                         size="small"
                     >重置</el-button>
                     <el-button
-                        type="primary"
+                        type="primary" round
                         style="float: right ;margin-right: 15px"
                         class="btn-add"
                         @click="handleAddVersion()"
@@ -36,7 +36,7 @@
                                 v-model="queryInfo.designName"
                                 placeholder="设计公司"
                                 :filterable="true"
-                                clearable
+                                clearable  @change="handleSelectionChange"
                             >
                                 <el-option
                                     v-for="item in designCompanyList"
@@ -51,7 +51,7 @@
                                 v-model="queryInfo.brandName"
                                 placeholder="品牌商选择"
                                 :filterable="true"
-                                clearable
+                                clearable  @change="handleSelectionChange"
                             >
                                 <el-option
                                     v-for="item in brandList"
@@ -66,7 +66,7 @@
                                 v-model="queryInfo.projectName"
                                 placeholder="项目选择"
                                 :filterable="true"
-                                clearable
+                                clearable  @change="handleSelectionChange"
                             >
                                 <el-option
                                     v-for="item in projectlist"
@@ -169,21 +169,21 @@
             <el-table :data="versionList" border stripe>
                 <!-- <el-table-column type="index"></el-table-column> -->
                 <el-table-column label="版本ID" width="80px" prop="versionId"></el-table-column>
-                <el-table-column label="设计公司" prop="designName"  ></el-table-column>
-                <el-table-column label="品牌商" prop="brandName" ></el-table-column>
-                <el-table-column label="项目" prop="projectName" width="330px"></el-table-column>
+                <el-table-column label="设计公司" prop="designName" width="120px"  ></el-table-column>
+                <el-table-column label="品牌商" prop="brandName" width="120px" ></el-table-column>
+                <el-table-column label="项目" prop="projectName" width="340px"></el-table-column>
                 <el-table-column label="创建时间" prop="createTime"></el-table-column>
                 <el-table-column label="版本号" prop="versionNo"></el-table-column>
-                <el-table-column label="版本状态" prop="status"></el-table-column>
+                <el-table-column label="版本状态" prop="status" width="400px" ></el-table-column>
                 <el-table-column label="备注" prop="memo"></el-table-column>
                 <el-table-column label="操作" width="260px">
                     <template slot-scope="scope">
-                        <el-button type="warning" icon="el-icon-delete" size="mini" @click="handleDeleteVersion(scope.row)">
+                        <el-button type="danger" circle icon="el-icon-delete"  size="mini" @click="handleDeleteVersion(scope.row)">
 
                         </el-button>
-                        <el-button  type="info"  icon="el-icon-setting" :disabled="computeStatus(scope.row.status)"  size="mini"  @click="handleBeforeVersion(scope.row)">设置</el-button>
+                        <el-button  type="info" round  icon="el-icon-setting" :disabled="computeStatus(scope.row.status)"  size="mini"  @click="handleBeforeVersion(scope.row)">设置</el-button>
                         <el-button
-                            type="primary"
+                            type="warning" round
                             icon="el-icon-edit"
                             size="mini"
                             @click="handleEditVersion(scope.row)"
@@ -217,7 +217,7 @@ const defaultListQuery = {
     designName: '',
     projectName: '',
     pageNo: 1,
-    pageSize: 20
+    pageSize: 15
 };
 
 export default {
@@ -360,14 +360,17 @@ export default {
                     // console.log('设计公司列表',designCompanyList)
                 });
         },
+        handleSelectionChange(){
+            this.getVersionList()
+        },
 
         handleSizeChange(newSize) {
             this.queryInfo.pageSize = newSize;
-            this.getProjectList();
+            this.getVersionList();
         },
         handleCurrentChange(newPage) {
             this.queryInfo.pageNo = newPage;
-            this.getProjectList();
+            this.getVersionList();
         },
         async handleDeleteVersion(row) {
             console.log('----当前版本行------', row);
@@ -440,7 +443,7 @@ export default {
             this.$router.push({path:'/versionUpdate',query:{versionId:row.versionId}});
         },
         computeStatus(status){
-        if(status=='0'){
+        if(status=='初始版本'){
             return true
         }
         return false;
@@ -450,5 +453,14 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style  scoped>
+    .el-pagination {
+         text-align: center; 
+    }
+    .paginnation-container {
+    position: fixed;
+    
+     left: 40%;
+     bottom: 0%
+}
 </style>

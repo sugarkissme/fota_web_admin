@@ -18,7 +18,7 @@ export default new Router({
                 {
                     path: '/dashboard',
                     component: () => import(/* webpackChunkName: "dashboard" */ '../components/page/Dashboard.vue'),
-                    meta: { title: '系统首页' }
+                    meta: { title: '首页' }
                 },
                 {
                     path: '/icon',
@@ -49,7 +49,7 @@ export default new Router({
                 {
                     path: '/testManagement',
                     component: () => import(/* webpackChunkName: "form" */ '../components/page/fota/TestManagement.vue'),
-                    meta: { title: '测试IMEI管理' }
+                    meta: { title: 'IMEI管理' }
                 },
                 {
                     path: '/versionManagement',
