@@ -37,6 +37,8 @@
     <br/>
     <br/>
     <el-button type="primary" round id="browse_button">选择文件</el-button>
+    <el-button :disabled="uploading" type="primary"  round @click="uploadStart()">开始上传</el-button>
+    <el-button :disabled="!uploading" type="warring" round @click="uploadStop()">暂停上传</el-button>
     <br/>
     <el-table
       :data="tableData"
@@ -57,7 +59,7 @@
         label="状态">
         <template slot-scope="scope">
           <span v-if="scope.row.status === -1">正在加载数据</span>
-          <span v-if="scope.row.status === 1 && scope.row.percent === 0" style="color: orange">加载完成请上传</span>
+          <span v-if="scope.row.status === 1 && scope.row.percent === 0" style="color: orange">加载完成，请开始上传</span>
           <span v-if="scope.row.status === 4" style="color: brown">上传失败</span>
           <span v-if="scope.row.status === 5" style="color: blue">上传成功</span>
           <el-progress v-if="scope.row.status === 2 || scope.row.status === 1 && scope.row.percent > 0" :text-inside="true" :stroke-width="20" :percentage="scope.row.percent"></el-progress>
@@ -66,13 +68,12 @@
       <el-table-column
         label="操作">
         <template slot-scope="scope">
-          <el-button type="danger" @click="deleteFile(scope.row.id)">删除</el-button>
+          <el-button type="danger" round @click="deleteFile(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <br/>
-    <el-button :disabled="uploading" type="primary"  round @click="uploadStart()">开始上传</el-button>
-    <el-button :disabled="!uploading" type="warring" round @click="uploadStop()">暂停上传</el-button>
+   
   </div>
 </template>
 

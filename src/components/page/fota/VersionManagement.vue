@@ -2,82 +2,28 @@
     <div>
         <!-- 面包屑导航区域 -->
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+            <!-- <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item> -->
             <el-breadcrumb-item>版本控制</el-breadcrumb-item>
             <el-breadcrumb-item>版本管理</el-breadcrumb-item>
         </el-breadcrumb>
         <div class="app-container">
-            <el-card class="filter-container" shadow="never">
-                <div>
-                    <el-button
-                        style="float: right"
-                        @click="getVersionList()"
-                        type="primary" round
-                        size="small"
-                    >查询结果</el-button>
-                    <el-button
-                        type="primary" round
-                        style="float: right;margin-right: 15px"
-                        @click="handleResetSearch()"
-                        size="small"
-                    >重置</el-button>
-                    <el-button
-                        type="primary" round
-                        style="float: right ;margin-right: 15px"
-                        class="btn-add"
-                        @click="handleAddVersion()"
-                        size="small"
-                    >添加最新版本</el-button>
-                </div>
-                <div style="margin-top: 15px">
-                    <el-form inline>
-                        <el-form-item>
-                            <el-select
-                                v-model="queryInfo.designName"
-                                placeholder="设计公司"
-                                :filterable="true"
-                                clearable  @change="handleSelectionChange"
-                            >
-                                <el-option
-                                    v-for="item in designCompanyList"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.label"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-select
-                                v-model="queryInfo.brandName"
-                                placeholder="品牌商选择"
-                                :filterable="true"
-                                clearable  @change="handleSelectionChange"
-                            >
-                                <el-option
-                                    v-for="item in brandList"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.label"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-select
-                                v-model="queryInfo.projectName"
-                                placeholder="项目选择"
-                                :filterable="true"
-                                clearable  @change="handleSelectionChange"
-                            >
-                                <el-option
-                                    v-for="item in projectlist"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.label"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-form>
-                </div>
+            <el-card class="filter-container"  shadow="never">
+                <el-select  v-model="queryInfo.designName"  placeholder="设计公司"  :filterable="true"  clearable  @change="handleSelectionChange" >
+                       <el-option  v-for="item in designCompanyList"  :key="item.value"  :label="item.label"  :value="item.label"></el-option>
+                </el-select>
+
+                <el-select style="padding-left:10px"  v-model="queryInfo.brandName"    placeholder="品牌商选择"    :filterable="true"    clearable  @change="handleSelectionChange">
+                        <el-option v-for="item in brandList" :key="item.value" :label="item.label" :value="item.label" ></el-option>
+                </el-select>
+
+                <el-select style="padding-left:10px"  v-model="queryInfo.projectName"  placeholder="项目选择"  :filterable="true"  clearable  @change="handleSelectionChange">
+                    <el-option    v-for="item in projectlist"    :key="item.value"    :label="item.label"    :value="item.label" ></el-option>
+                </el-select>
+                <span style="padding-left:20px">
+                    <el-button  @click="getVersionList()"  type="primary" round  size="mini">查询</el-button>
+                    <el-button  type="primary" round  @click="handleResetSearch()"  size="mini">重置</el-button>
+                    <el-button  type="primary" round  class="btn-add"  @click="handleAddVersion()"  size="mini">添加最新版本</el-button>
+                </span>
             </el-card>
 
             <!-- 添加项目的对话框 -->
@@ -461,6 +407,11 @@ export default {
     position: fixed;
     
      left: 40%;
-     bottom: 0%
+     bottom: 0%;
 }
+.filter-container{
+    height:65px;
+    padding:0cm;
+}
+
 </style>

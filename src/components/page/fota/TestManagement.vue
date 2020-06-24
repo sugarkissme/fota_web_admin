@@ -2,96 +2,32 @@
     <div>
         <!-- 面包屑导航区域 -->
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item>测试IMEI</el-breadcrumb-item>
-            <el-breadcrumb-item>测试IMEI管理</el-breadcrumb-item>
+            <!-- <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item> -->
+            <el-breadcrumb-item>版本控制</el-breadcrumb-item>
+            <el-breadcrumb-item>IMEI管理</el-breadcrumb-item>
         </el-breadcrumb>
-        <div class="app-container">
+        <div class="app-container" >
             <el-card class="filter-container" shadow="never">
                 <div>
-                    
-                    <el-button
-                        style="float: right ;margin-right: 30px"
-                        @click="delDialogVisible=true"
-                        type="danger" round
-                        size="small" icon="el-icon-delete"
-                    >删除指定项目IMEI</el-button>
-                    <el-button
-                        type="primary" round
-                        style="float: right;margin-right: 30px"
-                        @click="addDialogVisible=true"
-                        size="small"
-                    >添加IMEI</el-button>
-                   
-                    <el-button
-                        type="primary" round
-                        style="float: right;margin-right: 30px"
-                        @click="handleResetSearch()"
-                        size="small"
-                    >批量导入IMEI</el-button>
-                   <el-button
-                        type="primary" round
-                        style="float: right;margin-right: 30px"
-                        @click="handleResetSearch()"
-                        size="small"
-                    >下载IEMI模板</el-button>
-                   <el-button
-                        type="primary" round
-                        style="float: right;margin-right: 30px"
-                        @click="handleResetSearch()"
-                        size="small"
-                    >重置筛选条件</el-button>
-
+                     <el-select      v-model="queryInfo.designName"      placeholder="设计公司"      :filterable="true"      clearable @change="handleSelectionChange"  >
+                        <el-option     v-for="item in designCompanyList"     :key="item.value"     :label="item.label"     :value="item.label" ></el-option>
+                    </el-select>
+                     <el-select   style="padding-left:10px"   v-model="queryInfo.brandName"     placeholder="品牌商选择"     :filterable="true"     clearable @change="handleSelectionChange" >
+                         <el-option v-for="item in brandList"      :key="item.value"      :label="item.label"      :value="item.label"  ></el-option>
+                     </el-select>
+                    <el-select  style="padding-left:10px" v-model="queryInfo.projectName"      placeholder="项目选择"      :filterable="true"      clearable @change="handleSelectionChange"  >
+                       <el-option      v-for="item in projectlist"      :key="item.value"      :label="item.label"      :value="item.label"  ></el-option>
+                    </el-select>
+                    <span style="padding-left:20px">
+                      
+                         <el-button     type="primary" round     @click="addDialogVisible=true"     size="mini" >添加</el-button>
+                           <el-button  type="primary" round   @click="handleResetSearch()"    size="mini">重置</el-button>
+                         <el-button type="primary" round   @click="handleResetSearch()"     size="mini" >批量导入</el-button>
+                         <el-button  type="primary" round   @click="handleResetSearch()"     size="mini" >下载模板</el-button>
+                         <el-button    @click="delDialogVisible=true"    type="danger" round    size="mini" icon="el-icon-delete">删除指定项目IMEI</el-button>
+                    </span>
                 </div>
-                <div style="margin-top: -10px">
-                    <el-form inline>
-                        <el-form-item>
-                            <el-select
-                                v-model="queryInfo.designName"
-                                placeholder="设计公司"
-                                :filterable="true"
-                                clearable @change="handleSelectionChange"
-                            >
-                                <el-option
-                                    v-for="item in designCompanyList"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.label"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-select
-                                v-model="queryInfo.brandName"
-                                placeholder="品牌商选择"
-                                :filterable="true"
-                                clearable @change="handleSelectionChange"
-                            >
-                                <el-option
-                                    v-for="item in brandList"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.label"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-select
-                                v-model="queryInfo.projectName"
-                                placeholder="项目选择"
-                                :filterable="true"
-                                clearable @change="handleSelectionChange"
-                            >
-                                <el-option
-                                    v-for="item in projectlist"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.label"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-form>
-                </div>
+                
             </el-card>
 
             <!-- 指定项目添加IMEI的对话框 -->
@@ -177,6 +113,7 @@
 
 <script>
 import { deleteIemiTestById,createImeiTest,deleteIemiTestByProjectId,resetAllStatus,resetStatusById } from '@/api/imeiTest';
+
 const defaultListQuery = {
     versionId: null,
     brandName: '',
@@ -413,12 +350,15 @@ export default {
 </script>
 
 <style  scoped>
+
 .paginnation-container {
     position: fixed;
     
      left: 40%;
      bottom: 0%
 }
-
+.filter-container{
+    height:65px
+}
 
 </style>
