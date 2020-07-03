@@ -56,9 +56,10 @@
             <el-input v-model="addForm.productName" placeholder="产品名称" s></el-input>
           </el-form-item>
           <el-form-item label="LANGUAGE" prop="language" label-width="120px">
-            <el-select v-model="addForm.language" placeholder="语言" filterable style="width: 100%">
+            <!-- <el-select v-model="addForm.language" placeholder="语言" filterable style="width: 100%">
                     <el-option v-for="item in languages" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
+            </el-select> -->
+           <el-input v-model="addForm.language" placeholder="语言"  ></el-input>
           </el-form-item>
           <el-form-item label="OPERATOR" prop="operator" label-width="120px">
             <el-select v-model="addForm.operator" placeholder="操作" filterable style="width: 100%">

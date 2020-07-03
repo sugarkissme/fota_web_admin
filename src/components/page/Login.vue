@@ -1,17 +1,17 @@
 <template>
     <div class="login-wrap">
         <div class="ms-login">
-            <div class="ms-title">后台管理系统</div>
+            <div class="ms-title">合众思壮FOTA管理平台</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
-                <el-form-item prop="username">
-                    <el-input v-model="param.username" placeholder="username">
+                <el-form-item prop="userName">
+                    <el-input v-model="param.userName" placeholder="用户名">
                         <el-button slot="prepend" icon="el-icon-lx-people"></el-button>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
                     <el-input
                         type="password"
-                        placeholder="password"
+                        placeholder="密码"
                         v-model="param.password"
                         @keyup.enter.native="submitForm()"
                     >
@@ -21,35 +21,51 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm()">登录</el-button>
                 </div>
-                <p class="login-tips">Tips : 用户名和密码随便填。</p>
+                <el-select
             </el-form>
         </div>
     </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
     data: function() {
         return {
             param: {
-                username: 'admin',
-                password: '123123',
+                userName: '',
+                password: '',
             },
             rules: {
-                username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+                userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
                 password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
             },
+             userToken:'',
         };
     },
     methods: {
+        ...mapMutations(['changeLogin']),
         submitForm() {
+        
+            let _this=this;
             this.$refs.login.validate(valid => {
                 if (valid) {
-                    this.$message.success('登录成功');
-                    localStorage.setItem('ms_username', this.param.username);
-                    this.$router.push('/');
+                    this.$http.get('/admin/login',{params:this.param,headers:{"Authorization":" "}}).then(res =>{
+                             res = res.data
+                            if(res.data==null){
+                                return this.$message.error(res.msg);  
+                            }
+                            _this.userToken=res.data;
+                            console.log("获取到的用户信息---",this.userToken);
+                            this.changeLogin({Authorization: this.userToken})
+                            this.$router.push('/')
+                       }
+                    ).catch(err=>{
+                        console.log("异常了---",err);
+                    })
+                
                 } else {
-                    this.$message.error('请输入账号和密码');
                     console.log('error submit!!');
                     return false;
                 }
