@@ -5,20 +5,21 @@ Vue.use(Vuex);
 export default new Vuex.Store({
  
   state: {
-    // 存储token
-    Authorization: localStorage.getItem('Authorization') ? localStorage.getItem('Authorization') : ''
+    // 存储sessionKey
+    sessionKey: localStorage.getItem('sessionKey') ? localStorage.getItem('sessionKey') : ''
   },
  actions: {
-   changeLogin(ctx,Authorization){
-     ctx.commit('changeLogin',Authorization);
+   changeLogin(ctx,sessionKey){
+     ctx.commit('changeLogin',sessionKey);
    }
  },
   mutations: {
-    // 修改token，并将token存入localStorage
+    // 修改sessionKey，并将sessionKey存入localStorage
     changeLogin (state,user) {
-     state.Authorization = user.Authorization;
-     console.log("store/index.js---到这里了!");
-      localStorage.setItem('Authorization', user.Authorization);
+     state.sessionKey = user.sessionKey;
+     console.log("store/index.js---到这里了!"+JSON.stringify(user));
+      localStorage.setItem('sessionKey', user.sessionKey);
+      localStorage.setItem('userName', user.userName);
     }
   }
 });

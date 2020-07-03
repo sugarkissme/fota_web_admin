@@ -24,13 +24,13 @@ const i18n = new VueI18n({
     messages
 });
 
-//异步请求前在header里加入token
+//异步请求前在header里加入sessionKey
 axios.interceptors.request.use(
     config => {
-      if(config.url==='/admin/login'||config.url==='/admin/login'){  //如果是登录和注册操作，则不需要携带header里面的token
+      if(config.url==='/admin/login'||config.url==='/admin/login'){  //如果是登录和注册操作，则不需要携带header里面的sessionKey
       }else{
-        if (localStorage.getItem('Authorization')) {
-          config.headers.Authorizatior = localStorage.getItem('Authorization');
+        if (localStorage.getItem('sessionKey')) {
+          config.headers.sessionKey = localStorage.getItem('sessionKey');
         }
       }
       return config;
@@ -38,7 +38,7 @@ axios.interceptors.request.use(
     error => {
       return Promise.reject(error);
     });
-  //异步请求后，判断token是否过期
+  //异步请求后，判断sessionKey是否过期
   axios.interceptors.response.use(
     response =>{
       return response;
@@ -47,20 +47,21 @@ axios.interceptors.request.use(
       if(error.response){
         switch (error.response.status) {
           case 401:
-            localStorage.removeItem('Authorization');
+            localStorage.removeItem('sessionKey');
+            localStorage.removeItem('userName');
             this.$router.push('/');
         }
       }
     }
   )
-  //异步请求前判断请求的连接是否需要token
+  //异步请求前判断请求的连接是否需要sessionKey
   router.beforeEach((to, from, next) => {
     if (to.path === '/') {
       next();
     } else {
-      let token = localStorage.getItem('Authorization');
-      console.log("我是浏览器本地缓存的token: "+token);
-      if (token === 'null' || token === '') {
+      let sessionKey = localStorage.getItem('sessionKey');
+      console.log("我是浏览器本地缓存的sessionKey: "+sessionKey);
+      if (sessionKey === 'null' || sessionKey === '') {
         next('/');
       } else {
         next();
@@ -71,8 +72,7 @@ axios.interceptors.request.use(
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
     document.title = `${to.meta.title}`;
-    const role = localStorage.getItem('Authorization');
-    console.log("role ....",role+"--to-path---"+to.path)
+    const role = localStorage.getItem('sessionKey');
     if (!role && to.path !== '/login') {
         next('/login');
     } else if (to.meta.permission) {

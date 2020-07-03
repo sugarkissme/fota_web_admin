@@ -21,7 +21,6 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm()">登录</el-button>
                 </div>
-                <el-select
             </el-form>
         </div>
     </div>
@@ -41,24 +40,24 @@ export default {
                 userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
                 password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
             },
-             userToken:'',
+             sessionKey:'',
         };
     },
     methods: {
         ...mapMutations(['changeLogin']),
         submitForm() {
-        
-            let _this=this;
             this.$refs.login.validate(valid => {
                 if (valid) {
-                    this.$http.get('/admin/login',{params:this.param,headers:{"Authorization":" "}}).then(res =>{
+                    this.$http.get('/admin/login',{params:this.param,headers:{"sessionKey":" "}}).then(res =>{
                              res = res.data
                             if(res.data==null){
+
+                                //
+
                                 return this.$message.error(res.msg);  
                             }
-                            _this.userToken=res.data;
-                            console.log("获取到的用户信息---",this.userToken);
-                            this.changeLogin({Authorization: this.userToken})
+                            console.log("获取到sessionKey---",this.sessionKey);
+                            this.changeLogin({sessionKey: res.data,userName:this.param.userName})
                             this.$router.push('/')
                        }
                     ).catch(err=>{
