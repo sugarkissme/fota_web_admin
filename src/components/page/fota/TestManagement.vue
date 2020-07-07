@@ -87,6 +87,11 @@
                         <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" @change="handleUpdateStatus(scope.row)"></el-switch>
                     </template>
                 </el-table-column>
+                <el-table-column label="是否黑名单" prop="status"  > 
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.blackFlag" :active-value="1" :inactive-value="0" @change="handleBlack(scope.row)"></el-switch>
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作" width="260px">
                     <template slot-scope="scope">
                         <el-button type="danger" circle icon="el-icon-delete" size="mini" @click="handleDeleteImeiTest(scope.row)">
@@ -113,6 +118,7 @@
 
 <script>
 import { deleteIemiTestById,createImeiTest,deleteIemiTestByProjectId,resetAllStatus,resetStatusById } from '@/api/imeiTest';
+import { resetBlackByProjectIdAndImei } from '@/api/imeiBlackWhite';
 
 const defaultListQuery = {
     versionId: null,
@@ -277,6 +283,18 @@ export default {
                     row.status=1
                     }else{
                     row.status=0
+                    }
+                    return this.$message.error(res.msg)
+                }
+              
+        },
+          async handleBlack(row){
+                const {data:res}=  await resetBlackByProjectIdAndImei(row.projectId,row.imei,row.blackFlag)
+                if(res.code!=0){
+                    if(row.blackFlag===0){
+                    row.blackFlag=1
+                    }else{
+                    row.blackFlag=0
                     }
                     return this.$message.error(res.msg)
                 }
