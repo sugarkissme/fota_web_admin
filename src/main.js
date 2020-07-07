@@ -41,6 +41,10 @@ axios.interceptors.request.use(
   //异步请求后，判断sessionKey是否过期
   axios.interceptors.response.use(
     response =>{
+      if(response.data.code===401){
+        localStorage.clear()
+        return router.replace('/login');
+      }
       return response;
     },
     error => {

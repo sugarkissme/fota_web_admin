@@ -51,9 +51,7 @@ export default {
                     this.$http.get('/admin/login',{params:this.param,headers:{"sessionKey":" "}}).then(res =>{
                              res = res.data
                             if(res.data==null){
-
-                                //
-
+                           
                                 return this.$message.error(res.msg);  
                             }
                             console.log("获取到sessionKey---",this.sessionKey);

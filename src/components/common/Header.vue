@@ -53,7 +53,10 @@ export default {
             collapse: false,
             fullscreen: false,
             name: '小白',
-            message: 2
+            message: 2,
+            param:{
+                sessionKey:''
+            }
         };
     },
     computed: {
@@ -66,9 +69,11 @@ export default {
         // 用户名下拉菜单选择事件
         handleCommand(command) {
             if (command == 'loginout') {
+                this.param.sessionKey=localStorage.getItem("sessionKey")
                 localStorage.removeItem('sessionKey');
                 localStorage.removeItem('userName');
                 this.$router.push('/login');
+                this.$http.get('/admin/loginOut',{params:this.param})//退出登录
             }
         },
         // 侧边栏折叠
