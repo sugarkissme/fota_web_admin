@@ -22,8 +22,8 @@
                       
                          <el-button     type="primary" round     @click="addDialogVisible=true"     size="mini" >添加</el-button>
                            <el-button  type="primary" round   @click="handleResetSearch()"    size="mini">重置</el-button>
-                         <el-button type="primary" round   @click="handleResetSearch()"     size="mini" >批量导入</el-button>
-                         <el-button  type="primary" round   @click="handleResetSearch()"     size="mini" >下载模板</el-button>
+                            <el-button     type="primary" round     @click="importDialogVisible=true"     size="mini" >批量导入</el-button>
+                         <el-button  type="primary" round   @click="imeiTemplateDownLoad()"     size="mini" >下载模板</el-button>
                          <el-button    @click="delDialogVisible=true"    type="danger" round    size="mini" icon="el-icon-delete">删除指定项目IMEI</el-button>
                     </span>
                 </div>
@@ -66,6 +66,32 @@
                     <el-button type="primary" @click="delImeiByProject">确定</el-button>
                 </span>
             </el-dialog>
+
+
+
+       <!-- 批量导指定项目IMEI的对话框 -->
+            <el-dialog   title="批量导入IMEI"    :visible.sync="importDialogVisible"     width="50%"     @close="importDialogClose" >
+                <!-- 内容主体区域 -->
+                <el-form :model="importForm" :rules="importFormRules" ref="importFormRef" label-width="70px">
+                    <el-form-item label="选择项目" label-width="120px" prop="projectId">
+                        <el-select  v-model="importForm.projectId"  placeholder="请选择项目"  filterable  style="width: 100%" >
+                            <el-option v-for="item in projectlist" :key="item.value" :label="item.label" :value="item.value" ></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+                
+                <el-upload  class="upload-border-none"    ref="upload" action="/api/imeiTest/excelImport" :headers="{'sessionKey':sessionKey}" :data="importForm" :limit="1"  :before-upload="handleBefore" 
+                    :on-success="handleSuccess" accept=".xls,xlsx"   :auto-upload="false" :file-list="fileList" >
+                        <el-button   size="small" style="display:block;margin:0 auto" type="primary">选择文件</el-button>
+                </el-upload>
+
+                <!-- 底部区域 -->
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="importDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="importImeiByProject">确定</el-button>
+                </span>
+            </el-dialog>
+
 
         </div>
 
@@ -117,7 +143,7 @@
 </template>
 
 <script>
-import { deleteIemiTestById,createImeiTest,deleteIemiTestByProjectId,resetAllStatus,resetStatusById } from '@/api/imeiTest';
+import { deleteIemiTestById,createImeiTest,deleteIemiTestByProjectId,resetAllStatus,resetStatusById,imeiTemplateDownLoad } from '@/api/imeiTest';
 import { resetBlackByProjectIdAndImei } from '@/api/imeiBlackWhite';
 
 const defaultListQuery = {
@@ -145,12 +171,16 @@ export default {
             // 控制添加项目对话框的显示与隐藏
             addDialogVisible: false,
             delDialogVisible: false,
+            importDialogVisible: false,
             // 添加项目的表单数据
             addForm: {
                 projectId: '',
                 imei: ''
             },
             delForm: {
+                projectId: '',
+            },
+            importForm: {
                 projectId: '',
             },
             // 添加表单的验证规则对象
@@ -162,6 +192,11 @@ export default {
             delFormRules: {
                 projectId: [{ required: true, message: '请选项目', trigger: 'blur' }],
             },
+              // 添加表单的验证规则对象
+            importFormRules: {
+                projectId: [{ required: true, message: '请选项目', trigger: 'blur' }],
+            },
+            fileList: [],
         
         };
     },
@@ -170,6 +205,7 @@ export default {
         this.getBrandList();
         this.getDesignCompanyList();
         this.getImeiList();
+        this.sessionKey=localStorage.getItem("sessionKey")
     },
     methods: {
         getImeiList() {
@@ -288,6 +324,13 @@ export default {
                 }
               
         },
+          async imeiTemplateDownLoad(){
+                const {data:res}=  await imeiTemplateDownLoad()
+                if(res.code!=0){
+                    return this.$message.error(res.msg)
+                }
+              
+        },
           async handleBlack(row){
                 const {data:res}=  await resetBlackByProjectIdAndImei(row.projectId,row.imei,row.blackFlag)
                 if(res.code!=0){
@@ -318,6 +361,12 @@ export default {
          // 监听添加IEMI对话框的关闭事件
         delDialogClose() {
             this.$refs.delFormRef.resetFields();
+        },
+        
+         // 监听添加IEMI对话框的关闭事件
+        importDialogClose() {
+            this.$refs.importFormRef.resetFields();
+            this.fileList=[]
         },
         // 点击按钮，添加新IEMI
         addImei() {
@@ -360,14 +409,39 @@ export default {
                 // 重新获取IEMI列表数据
                 this.getImeiList()
             });
+        },
+            // 点击按钮，导入指定项目IMEI
+        importImeiByProject() {
+            this.$refs.importFormRef.validate(async valid => {
+                if (!valid) return;
+                this.$refs.upload.submit();
+            });
+        },
+        // 上传前的回调函数
+    　　handleBefore(file) {
+    　　　 
+    　　},
+        // 上传成功回调
+    　　handleSuccess(res) {
+        this.$refs.upload.clearFiles()
+        if(res.code==0){
+            this.importDialogVisible = false;
+            this.$message.success("导入成功！");
+            this.getImeiList()
+        }else{
+            this.$message.error('导入失败');
         }
+    　},
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
     
     },
   
 };
 </script>
 
-<style  scoped>
+<style >
 
 .paginnation-container {
     position: fixed;
@@ -378,5 +452,8 @@ export default {
 .filter-container{
     height:65px
 }
+ .upload-border-none{
+    border:none!important
+  } 
 
 </style>

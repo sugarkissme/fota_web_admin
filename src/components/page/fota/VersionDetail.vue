@@ -86,10 +86,8 @@
               <template>
                   <el-radio-group v-model="addStrategyForm.updateTips">
                     <el-radio :label="1">无提示</el-radio>
-                    <el-radio :label="2">桌面图标</el-radio>
-                    <el-radio :label="3">对话框</el-radio>
-                    <el-radio :label="4">通知栏普通</el-radio>
-                    <el-radio :label="5">通知栏常驻</el-radio>
+                    <el-radio :label="2">对话框</el-radio>
+                    <el-radio :label="3">通知栏</el-radio>
                   </el-radio-group>
               </template>
           </el-form-item>
@@ -97,44 +95,45 @@
             <template>
                   <el-radio-group v-model="addStrategyForm.installTips">
                     <el-radio :label="1">无提示</el-radio>
-                    <el-radio :label="2">桌面图标</el-radio>
-                    <el-radio :label="3">对话框</el-radio>
-                    <el-radio :label="4">通知栏普通</el-radio>
-                    <el-radio :label="5">通知栏常驻</el-radio>
+                    <el-radio :label="2">通知栏</el-radio>
                   </el-radio-group>
               </template>
           </el-form-item>
-          <el-form-item label="是否按地区升级" prop="updateRegionalFlag" label-width="120px">
+          <!-- <el-form-item label="是否按地区升级" prop="updateRegionalFlag" label-width="120px">
               <template>
                   <el-radio-group v-model="addStrategyForm.updateRegionalFlag">
                     <el-radio :label="1">是</el-radio>
                     <el-radio :label="0">否</el-radio>
                   </el-radio-group>
               </template>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="自动下载" prop="autoDownloadFlag" label-width="120px">
               <template>
                   <el-radio-group v-model="addStrategyForm.autoDownloadFlag">
-                    <el-radio :label="1">仅wifi</el-radio>
-                    <el-radio :label="2">任意网络</el-radio>
-                    <el-radio :label="3">否</el-radio>
-                    <el-radio :label="4">以客户端为准</el-radio>
+                      <el-radio :label="1">以客户端为准</el-radio>
+                          <el-radio :label="2">否</el-radio>
+                    <el-radio :label="3">是-仅wifi</el-radio>
+                    <el-radio :label="4">是-任意网络</el-radio>
+                
+                  
                   </el-radio-group>
               </template>
           </el-form-item>
           <el-form-item label="自动升级" prop="autoUpdateFlag" label-width="120px">
              <template>
                   <el-radio-group v-model="addStrategyForm.autoUpdateFlag ">
-                    <el-radio :label="1">是</el-radio>
                     <el-radio :label="0">否</el-radio>
+                    <el-radio :label="1">是</el-radio>
+               
                   </el-radio-group>
               </template>
           </el-form-item>
           <el-form-item label="升级成功提示" prop="successTipsFlag" label-width="120px">
             <template>
                   <el-radio-group v-model="addStrategyForm.successTipsFlag ">
-                    <el-radio :label="1">是</el-radio>
                     <el-radio :label="0">否</el-radio>
+                    <el-radio :label="1">是</el-radio>
+                 
                   </el-radio-group>
               </template>
           </el-form-item>
@@ -149,8 +148,9 @@
           <el-form-item label="是否按IMEI升级" prop="updateImeiFlag" label-width="120px">
              <template>
                   <el-radio-group v-model="addStrategyForm.updateImeiFlag ">
-                    <el-radio :label="1">是</el-radio>
                     <el-radio :label="0">否</el-radio>
+                    <el-radio :label="1">是</el-radio>
+             
                   </el-radio-group>
               </template>
           </el-form-item>

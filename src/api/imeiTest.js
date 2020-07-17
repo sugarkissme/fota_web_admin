@@ -35,3 +35,7 @@ export function resetAllStatus() {
 export function resetStatusById(id,status) {
   return axios.post('/imeiTest/resetStatusById?id='+id+'&status='+status)
   }
+
+  export function imeiTemplateDownLoad() {
+    return axios.get('/template//download?templateName=imeiTestImportTemplate')
+  }
