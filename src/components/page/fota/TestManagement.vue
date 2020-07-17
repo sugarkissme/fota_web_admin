@@ -19,12 +19,12 @@
                        <el-option      v-for="item in projectlist"      :key="item.value"      :label="item.label"      :value="item.label"  ></el-option>
                     </el-select>
                     <span style="padding-left:20px">
-                      
-                         <el-button     type="primary" round     @click="addDialogVisible=true"     size="mini" >添加</el-button>
-                           <el-button  type="primary" round   @click="handleResetSearch()"    size="mini">重置</el-button>
-                            <el-button     type="primary" round     @click="importDialogVisible=true"     size="mini" >批量导入</el-button>
-                         <el-button  type="primary" round   @click="imeiTemplateDownLoad()"     size="mini" >下载模板</el-button>
-                         <el-button    @click="delDialogVisible=true"    type="danger" round    size="mini" icon="el-icon-delete">删除指定项目IMEI</el-button>
+                        
+                        <el-button     type="primary" round     @click="addDialogVisible=true"     size="mini" >添加</el-button>
+                        <el-button  type="primary" round   @click="handleResetSearch()"    size="mini">重置</el-button>
+                        <el-button     type="primary" round     @click="importDialogVisible=true"     size="mini" >批量导入</el-button>
+                        <el-button  type="primary" round   @click="imeiTemplateDownLoad()"     size="mini" >下载模板</el-button>
+                        <el-button    @click="delDialogVisible=true"    type="danger" round    size="mini" icon="el-icon-delete">删除指定项目IMEI</el-button>
                     </span>
                 </div>
                 
@@ -143,8 +143,9 @@
 </template>
 
 <script>
-import { deleteIemiTestById,createImeiTest,deleteIemiTestByProjectId,resetAllStatus,resetStatusById,imeiTemplateDownLoad } from '@/api/imeiTest';
+import { deleteIemiTestById,createImeiTest,deleteIemiTestByProjectId,resetAllStatus,resetStatusById } from '@/api/imeiTest';
 import { resetBlackByProjectIdAndImei } from '@/api/imeiBlackWhite';
+import axios from 'axios'
 
 const defaultListQuery = {
     versionId: null,
@@ -324,13 +325,20 @@ export default {
                 }
               
         },
-          async imeiTemplateDownLoad(){
-                const {data:res}=  await imeiTemplateDownLoad()
-                if(res.code!=0){
-                    return this.$message.error(res.msg)
-                }
-              
+      
+         imeiTemplateDownLoad(){
+             axios.get('/template/download?templateName=imeiTestImportTemplate',{responseType:'arraybuffer'}).then((res)=>{
+                let fileName=decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1])//获取头里的文件名
+                let blob =new Blob([res.data],{type:"application/vnd.ms-excel"});//获取文件数据
+                let objectUrl=URL.createObjectURL(blob);
+                const link=document.createElement('a')
+                link.href=objectUrl
+                link.download=fileName;
+                link.click();//下载文件
+                URL.revokeObjectURL(objectUrl);//释放内存
+             }).catch(function(res){})
         },
+
           async handleBlack(row){
                 const {data:res}=  await resetBlackByProjectIdAndImei(row.projectId,row.imei,row.blackFlag)
                 if(res.code!=0){

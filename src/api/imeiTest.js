@@ -37,5 +37,5 @@ export function resetStatusById(id,status) {
   }
 
   export function imeiTemplateDownLoad() {
-    return axios.get('/template//download?templateName=imeiTestImportTemplate')
+    return axios.get('/template/download?templateName=imeiTestImportTemplate')
   }
