@@ -68,7 +68,7 @@
     <div class="config-container">
       <el-dialog title="版本定制策略" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
         <!-- 内容主体区域 -->
-        <el-form :model="addStrategyForm" ref="addFormRef" label-width="70px">
+        <el-form :model="addStrategyForm"  ref="addFormRef" label-width="70px">
           
           <el-form-item label="当前版本号" prop="currentVersionNo" label-width="120px" >
             {{addStrategyForm.currentVersionNo}}
@@ -99,14 +99,6 @@
                   </el-radio-group>
               </template>
           </el-form-item>
-          <!-- <el-form-item label="是否按地区升级" prop="updateRegionalFlag" label-width="120px">
-              <template>
-                  <el-radio-group v-model="addStrategyForm.updateRegionalFlag">
-                    <el-radio :label="1">是</el-radio>
-                    <el-radio :label="0">否</el-radio>
-                  </el-radio-group>
-              </template>
-          </el-form-item> -->
           <el-form-item label="自动下载" prop="autoDownloadFlag" label-width="120px">
               <template>
                   <el-radio-group v-model="addStrategyForm.autoDownloadFlag">
@@ -114,8 +106,6 @@
                           <el-radio :label="2">否</el-radio>
                     <el-radio :label="3">是-仅wifi</el-radio>
                     <el-radio :label="4">是-任意网络</el-radio>
-                
-                  
                   </el-radio-group>
               </template>
           </el-form-item>
@@ -124,10 +114,26 @@
                   <el-radio-group v-model="addStrategyForm.autoUpdateFlag ">
                     <el-radio :label="0">否</el-radio>
                     <el-radio :label="1">是</el-radio>
-               
                   </el-radio-group>
               </template>
           </el-form-item>
+
+
+          <el-form-item  v-if="addStrategyForm.autoUpdateFlag==1" label="升级时间段" prop="autoUpdateStartTime" label-width="120px">
+             <template>
+                  <span >开始时间</span>
+                    <el-select  v-model="addStrategyForm.autoUpdateStartTime" placeholder="0">
+                        <el-option  v-for="item in options"  :key="item.value"  :label="item.label"  :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <span >结束时间</span>
+                    <el-select  v-model="addStrategyForm.autoUpdateEndTime" placeholder="24">
+                        <el-option  v-for="item in options"  :key="item.value"  :label="item.label"  :value="item.value">
+                        </el-option>
+                    </el-select>
+              </template>
+          </el-form-item>
+
           <el-form-item label="升级成功提示" prop="successTipsFlag" label-width="120px">
             <template>
                   <el-radio-group v-model="addStrategyForm.successTipsFlag ">
@@ -199,8 +205,6 @@ export default {
         "updateRegional": null,
         "autoDownloadFlag": null,
         "autoUpdateFlag": null,
-        "autoUpdateStartTime": null,
-        "autoUpdateEndTime": null,
         "updatePowerNeed": null,
         "successTipsFlag": null,
         "updateImeiFlag": null,
@@ -208,6 +212,8 @@ export default {
         updateVersionNo:null,
         fileName:null,
         fileSize:null,
+        autoUpdateStartTime: 0,
+        autoUpdateEndTime: 24,
       },
       operators:[{
           value: 'other',
@@ -247,8 +253,84 @@ export default {
         up: {},
         files:[],
         tableData: [],
-        uploading: false
-
+        uploading: false,
+         options: [{
+          value: '0',
+          label: '0'
+        }, {
+          value: '1',
+          label: '1'
+        },{
+          value: '2',
+          label: '2'
+        }, {
+          value: '3',
+          label: '3'
+        }, {
+          value: '4',
+          label: '4'
+        }, {
+          value: '5',
+          label: '5'
+        }, {
+          value: '6',
+          label: '6'
+        }, {
+          value: '7',
+          label: '7'
+        }, {
+          value: '8',
+          label: '8'
+        }, {
+          value: '9',
+          label: '9'
+        }, {
+          value: '10',
+          label: '10'
+        }, {
+          value: '11',
+          label: '11'
+        }, {
+          value: '12',
+          label: '12'
+        }, {
+          value: '13',
+          label: '13'
+        }, {
+          value: '14',
+          label: '14'
+        }, {
+          value: '15',
+          label: '15'
+        }, {
+          value: '16',
+          label: '16'
+        }, {
+          value: '17',
+          label: '17'
+        }, {
+          value: '18',
+          label: '18'
+        }, {
+          value: '19',
+          label: '19'
+        }, {
+          value: '20',
+          label: '20'
+        }, {
+          value: '21',
+          label: '21'
+        }, {
+          value: '22',
+          label: '22'
+        }, {
+          value: '23',
+          label: '23'
+        }, {
+          value: '24',
+          label: '24'
+        }],
+      
     }
   },
   created() {
@@ -431,5 +513,5 @@ export default {
         position: fixed;
         left: 40%;
         bottom: 0%
-}
+    }
 </style>
