@@ -27,8 +27,8 @@
                 </el-option>
             </el-select>
             <span style="padding-left:20px" >
-                <el-button type="primary"  round @click="getProjectList()" size="small"> 查询</el-button>
-                <el-button type="primary" round @click="handleResetSearch()"  size="small">  重置 </el-button>
+              <el-button type="primary" round @click="handleResetSearch()"  size="small">  重置 </el-button>
+                <!-- <el-button type="primary"  round @click="getProjectList()" size="small"> 查询</el-button> -->
                 <el-button type="primary" round @click="addDialogVisible=true"   class="btn-add" size="small"> 添加 </el-button>
             </span>
          </div>

@@ -37,7 +37,7 @@ import {
   CheckboxGroup,
   Checkbox,
   Upload,CheckboxButton,Progress,
-  Dropdown,Backtop,DropdownItem, DropdownMenu,DatePicker,Icon,Radio,RadioGroup,Slider
+  Dropdown,Backtop,DropdownItem, DropdownMenu,DatePicker,Icon,Radio,RadioGroup,Slider,Drawer
 } from 'element-ui'
 
 Vue.use(Button)
@@ -86,6 +86,7 @@ Vue.use(RadioGroup)
 Vue.use(Slider)
 Vue.use(CheckboxButton)
 Vue.use(Progress)
+Vue.use(Drawer)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

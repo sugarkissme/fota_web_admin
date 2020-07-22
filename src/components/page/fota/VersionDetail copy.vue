@@ -28,8 +28,8 @@
               <div>
                     <uploader  scope=""  :browse_button="scope.row.id+''"  :url="server_config.url+'/BigFile/'"   chunk_size="2MB"   :max_retries="1"   :filters="{prevent_duplicates:true}"   :FilesAdded="filesAdded"   :BeforeUpload="beforeUpload"   :Error="error"   :UploadComplete="uploadComplete"   @inputUploader="inputUploader" />
                     <el-button type="primary" :id="scope.row.id" size='mini' >选择文件</el-button>
-                    <el-button  :disabled="uploading" type="danger" size='mini'  @click="uploadStart()">上传</el-button>
-                    <el-button :disabled="!uploading" type="warring"  size='mini' @click="uploadStop()">暂停</el-button>
+                    <el-button  :disabled="uploading" type="text" size='mini'  @click="uploadStart()">上传</el-button>
+                    <el-button :disabled="!uploading" type="text"  size='mini' @click="uploadStop()">暂停</el-button>
                     <span v-if="scope.row.upStatus === 1">正在计算MD5</span>
                     <span v-if="scope.row.upStatus === 1 && scope.row.percent === 0">MD5计算完成，准备上传</span>
                     <span v-if="scope.row.upStatus === 4" style="color: brown">上传失败</span>
@@ -328,13 +328,13 @@ export default {
         this.$http.get('/version/queryVersionDetailPageByVersionId',{
                     params: this.queryInfo
                 }).then(res => {
-                    console.log('返回',res.data)
+                    // console.log('返回',res.data)
                     res=res.data
                     if(res.code!=0){
                         return this.$message(res.msg)
                     }
                     this.versionDetailList=res.data.list;
-                    console.log('返回list',this.versionDetailList)
+                    // console.log('返回list',this.versionDetailList)
                 });
      
     },
@@ -389,7 +389,7 @@ export default {
     //获取定制配置信息
     async versionStrategy(row){
       const{data:res}= await getVersionStrategyByVersionDetailId(row.id)
-      console.log('策略返回',res)
+      // console.log('策略返回',res)
       if(res.code!=0){
         this.$message.error(res.msg)
       }

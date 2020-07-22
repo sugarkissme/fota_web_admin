@@ -26,7 +26,7 @@
           <el-table-column label="上传升级包" width="120px">
             <template slot-scope="scope">
               <div>
-                    <el-button type="primary" round @click="handleUpLoadBigFile(scope.row)" size='mini' >上传<i class="el-icon-upload el-icon--right"></i></el-button>
+                    <el-button type="primary"  icon="el-icon-upload el-icon--right" round @click="handleUpLoadBigFile(scope.row)" size='mini' >上传</el-button>
                 </div>
             </template>
           </el-table-column>
@@ -48,7 +48,7 @@
           </el-table-column>
           <el-table-column label="操作" >
             <template slot-scope="scope">
-              <el-button  v-if="scope.row.status===1" size="mini" type="info" round disabled>待上传<i class="el-icon--right"></i></el-button>
+              <el-button  v-if="scope.row.status===1" size="mini" type="info" round icon="el-icon-loading" disabled>待上传</el-button>
               <el-button  v-if="scope.row.status===2" size="mini" type="success" round @click="handleUpdateVersioStatus(scope.row,4)">测试通过</el-button>
               <el-button  v-if="scope.row.status===2" size="mini" type="warning" round  @click="handleUpdateVersioStatus(scope.row,3)">测试不通过</el-button>
               <el-button  v-if="scope.row.status===3" size="mini" type="warning" round  disabled >测试不通过 </el-button>
@@ -155,9 +155,10 @@
              <template>
                   <el-radio-group v-model="addStrategyForm.updateImeiFlag ">
                     <el-radio :label="0">否</el-radio>
-                    <el-radio :label="1">是</el-radio>
-             
+                    <el-radio :label="1">是-白名单</el-radio>
+                    <el-radio :label="2">是-黑名单</el-radio>
                   </el-radio-group>
+                <el-button v-if="addStrategyForm.updateImeiFlag!=0"  style="margin-left:15px;" type="text" @click="getVersionDetailImeiList()">导入或查看IMEI</el-button>
               </template>
           </el-form-item>
         </el-form>
@@ -167,14 +168,71 @@
           <el-button type="primary"  :style="{ display: showConfirm}" @click="configStrategy">确 定</el-button>
         </span>
       </el-dialog>
-    </div>
+      <div >
 
+       <!-- 批量导指定项目IMEI的对话框 -->
+            <el-dialog   title="批量导入IMEI"    :visible.sync="importDialogVisible"     width="50%"     @close="importDialogClose" >
+                <el-form :model="importForm" :rules="importFormRules" ref="importFormRef" label-width="70px">
+                    <el-upload  class="upload-border-none"    ref="upload" action="/api/version/excelImportByBlackAndVersionDetailId" :headers="{'sessionKey':sessionKey}" :data="importForm" :limit="1"  :before-upload="handleBefore" 
+                        :on-success="handleSuccess" accept=".xls,xlsx"   :auto-upload="false" :file-list="fileList" >
+                            <el-button   size="small"  type="primary">选择文件</el-button>
+                    </el-upload>
+                    <el-form-item label="选择类型" prop="blackFlag" label-width="120px">
+                        <template> 
+                            <el-radio-group v-model="importForm.blackFlag ">
+                                <el-radio :label="0">白名单</el-radio>
+                                <el-radio :label="1">黑名单</el-radio>
+                            </el-radio-group>
+                        </template>
+                    </el-form-item>
+                </el-form>
+                <!-- 底部区域 -->
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="importDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="importImeiByProject">确定</el-button>
+                </span>
+            </el-dialog>
+
+        <el-drawer  :visible.sync="imeiDrawVisible"  direction="rtl"  size="50%">
+             <el-card class="filter-container" shadow="never">
+                <div>
+                    <el-row :gutter="20">
+                            <el-col :span="8">
+                              <el-input placeholder="请输入内容" v-model="importForm.imei" clearable @clear="getVersionDetailImeiList">
+                                  <el-button slot="append" icon="el-icon-search" @click="getVersionDetailImeiList"></el-button>
+                              </el-input>
+                            </el-col>
+                            <el-col :span="4">
+                               <el-button     type="primary"      @click="importDialogVisible=true"   >批量导入IMEI</el-button>
+                            </el-col>
+                        </el-row>
+                </div>
+            </el-card>
+          <el-table :data="versionDetailImeiList">
+                <el-table-column label="IMEI" prop="imei"></el-table-column>
+                <el-table-column label="最近修改时间" prop="updateTime"></el-table-column>
+                <el-table-column label="是否黑名单" prop="blackFlag"  > 
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.blackFlag" :active-value="1" :inactive-value="0" @change="handleBlack(scope.row)"></el-switch>
+                    </template>
+                </el-table-column>
+          </el-table>
+
+            <div class="paginnation2-container">
+                <!-- 分页区域 -->
+                <el-pagination @size-change="handleSizeChangeVersionImei" @current-change="handleCurrentChangeVersionImei" :current-page="importForm.pageNo" :page-sizes="[5, 10, 15]" :page-size="importForm.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalSize" background>
+                </el-pagination>
+            </div>
+
+        </el-drawer>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import {updateVersionDetailStatus,updateVersionDetail} from '@/api/versionDetail'
-import {getVersionStrategyByVersionDetailId,updateVersionDetailStrategy} from '@/api/versionDetailStrategy'
+import {getVersionStrategyByVersionDetailId,updateVersionDetailStrategy,resetBlackByVersionDetailIdAndImei} from '@/api/versionDetailStrategy'
 const defaultListQuery = {
         pageNo: 1,
         pageSize: 15
@@ -188,11 +246,14 @@ export default {
       updateVersionNo:'',
       projectName:'',
       versionDetailList: [],
+      versionDetailImeiList: [],
       // 总数据条数
       totalSize: 0,
       queryInfo: Object.assign({}, defaultListQuery),
       // 控制添加项目对话框的显示与隐藏
       addDialogVisible: false,
+      imeiDrawVisible: false,
+      importDialogVisible: false,
       showConfirm:'',
       // 添加的表单数据
       addStrategyForm: {
@@ -214,6 +275,13 @@ export default {
         fileSize:null,
         autoUpdateStartTime: 0,
         autoUpdateEndTime: 24,
+      },
+      importForm: {
+          versionDetailId: '',
+          blackFlag:'',
+          imei:'',
+          pageNo: 1,
+          pageSize: 10
       },
       operators:[{
           value: 'other',
@@ -330,12 +398,19 @@ export default {
           value: '24',
           label: '24'
         }],
+
+    // 导入imei表单的验证规则对象
+      importFormRules: {
+          blackFlag: [{ required: true, message: '请选择黑白名单', trigger: 'blur' }],
+      },
+      fileList: [],
       
     }
   },
   created() {
     this.getParam()
     this.getVersionDetailList()
+    this.sessionKey=localStorage.getItem("sessionKey")
   },
 
   methods: {
@@ -345,7 +420,7 @@ export default {
         this.queryInfo.versionId=param.updateVersionId
         this.updateVersionNo=param.updateVersionNo
         this.projectName=param.projectName
-        console.log("版本详情跳转接受的参数",param)
+        // console.log("版本详情跳转接受的参数",param)
       },
 
      computeStatus(status){
@@ -397,22 +472,37 @@ export default {
         this.$http.get('/version/queryVersionDetailPageByVersionId',{
                     params: this.queryInfo
                 }).then(res => {
-                    console.log('返回',res.data)
+                    // console.log('返回',res.data)
                     res=res.data
                     if(res.code!=0){
                         return this.$message(res.msg)
                     }
                     this.versionDetailList=res.data.list;
                     this.totalSize=res.data.totalSize
-                    console.log('返回list',this.versionDetailList)
+                    // console.log('返回list',this.versionDetailList)
                 });
      
     },
-    getUploadFileData(row){
-      console.log("获取行",row)
-      this.updateVersionDetail.detailId=row.id
-      this.updateVersionDetail.status=2
 
+    getVersionDetailImeiList() {
+      this.imeiDrawVisible=true
+      this.$http.get('/version/queryVersionImeiDetailPage',{
+                    params: this.importForm
+                }).then(res => {
+                    // console.log('返回',res.data)
+                    res=res.data
+                    if(res.code!=0){
+                        return this.$message(res.msg)
+                    }
+                    this.versionDetailImeiList=res.data.list;
+                    this.totalSize=res.data.totalSize
+                    // console.log('返回list',this.versionDetailList)
+                });
+     
+    },
+    initImportFormData(){
+      this.importForm.imei=''
+       this.importForm.blackFlag=''
     },
     handleSizeChange(newSize) {
       this.queryInfo.pageSize = newSize
@@ -421,6 +511,18 @@ export default {
     handleCurrentChange(newPage) {
       this.queryInfo.pageNo = newPage
       this.getVersionDetailList()
+    },
+
+
+  
+ 
+    handleSizeChangeVersionImei(newSize) {
+      this.importForm.pageSize = newSize
+      this.getVersionDetailImeiList()
+    },
+    handleCurrentChangeVersionImei(newPage) {
+      this.importForm.pageNo = newPage
+      this.getVersionDetailImeiList()
     },
 
   
@@ -459,12 +561,49 @@ export default {
     //获取定制配置信息
     async versionStrategy(row){
       const{data:res}= await getVersionStrategyByVersionDetailId(row.id)
-      console.log('策略返回',res)
+      // console.log('策略返回',res)
       if(res.code!=0){
-        this.$message.error(res.msg)
+        return this.$message.error(res.msg)
       }
       Object.assign(this.addStrategyForm,res.data)
       this.addDialogVisible=true
+      this.importForm.versionDetailId=row.id
+      if(row.status===3||row.status===5){//控制对话框确定按钮的显示、隐藏
+        this.showConfirm='none'
+      }else{
+         this.showConfirm=''
+      }
+      console.log("策略详细信息",this.addStrategyForm)
+    },
+
+     //获取定制配置信息
+    async versionStrategy(row){
+      const{data:res}= await getVersionStrategyByVersionDetailId(row.id)
+      // console.log('策略返回',res)
+      if(res.code!=0){
+        return this.$message.error(res.msg)
+      }
+      Object.assign(this.addStrategyForm,res.data)
+      this.addDialogVisible=true
+      this.importForm.versionDetailId=row.id
+      if(row.status===3||row.status===5){//控制对话框确定按钮的显示、隐藏
+        this.showConfirm='none'
+      }else{
+         this.showConfirm=''
+      }
+      console.log("策略详细信息",this.addStrategyForm)
+    },
+
+         //获取定制配置信息
+    async versionDetailImeiQuery(){
+      const{data:res}= await getVersionStrategyByVersionDetailId(row.id)
+      // console.log('策略返回',res)
+      if(res.code!=0){
+        return this.$message.error(res.msg)
+      }
+      Object.assign(this.addStrategyForm,res.data)
+      this.addDialogVisible=true
+      this.importForm.versionDetailId=row.id
       if(row.status===3||row.status===5){//控制对话框确定按钮的显示、隐藏
         this.showConfirm='none'
       }else{
@@ -499,7 +638,48 @@ export default {
             }
             });
                
+    },
+    
+
+          // 点击按钮，导入指定项目IMEI
+    importImeiByProject() {
+          this.$refs.importFormRef.validate(async valid => {
+                if (!valid) return;
+                this.$refs.upload.submit();
+            });
+      },
+      // 上传前的回调函数
+  　　handleBefore(file) {
+  　　　 
+  　　},
+     // 监听添加IEMI对话框的关闭事件
+        importDialogClose() {
+            this.$refs.importFormRef.resetFields();
+            this.fileList=[]
         },
+      // 上传成功回调
+  　　handleSuccess(res) {
+      this.$refs.upload.clearFiles()
+      if(res.code==0){
+          this.importDialogVisible = false;
+          this.$message.success("导入成功！");
+          this.getImeiList()
+      }else{
+          this.$message.error('导入失败');
+      }
+  　},
+        /**重置指定版本设置黑白名单 1启用 0停用 */
+      async handleBlack(row){
+                const {data:res}=  await resetBlackByVersionDetailIdAndImei(row.versionDetailId,row.imei,row.blackFlag)
+                if(res.code!=0){
+                    if(row.blackFlag===0){
+                    row.blackFlag=1
+                    }else{
+                    row.blackFlag=0
+                    }
+                    return this.$message.error(res.msg)
+                }
+       },
 
   }
 }

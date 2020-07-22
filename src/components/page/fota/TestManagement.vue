@@ -19,9 +19,8 @@
                        <el-option      v-for="item in projectlist"      :key="item.value"      :label="item.label"      :value="item.label"  ></el-option>
                     </el-select>
                     <span style="padding-left:20px">
-                        
-                        <el-button     type="primary" round     @click="addDialogVisible=true"     size="mini" >添加</el-button>
                         <el-button  type="primary" round   @click="handleResetSearch()"    size="mini">重置</el-button>
+                        <el-button     type="primary" round     @click="addDialogVisible=true"     size="mini" >添加</el-button>
                         <el-button     type="primary" round     @click="importDialogVisible=true"     size="mini" >批量导入</el-button>
                         <el-button  type="primary" round   @click="imeiTemplateDownLoad()"     size="mini" >下载模板</el-button>
                         <el-button    @click="delDialogVisible=true"    type="danger" round    size="mini" icon="el-icon-delete">删除指定项目IMEI</el-button>
@@ -113,11 +112,11 @@
                         <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" @change="handleUpdateStatus(scope.row)"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="是否黑名单" prop="status"  > 
+                <!-- <el-table-column label="是否黑名单" prop="status"  > 
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.blackFlag" :active-value="1" :inactive-value="0" @change="handleBlack(scope.row)"></el-switch>
                     </template>
-                </el-table-column>
+                </el-table-column> -->
                 <el-table-column label="操作" width="260px">
                     <template slot-scope="scope">
                         <el-button type="danger" circle icon="el-icon-delete" size="mini" @click="handleDeleteImeiTest(scope.row)">
@@ -216,7 +215,7 @@ export default {
                 })
                 .then(res => {
                     res = res.data;
-                    console.log('测试IMEI返回', res);
+                    // console.log('测试IMEI返回', res);
                     if (res.code !== 0) {
                         return this.$message.error('获取IMEI列表失败！');
                     }

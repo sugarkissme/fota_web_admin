@@ -64,7 +64,7 @@ axios.interceptors.request.use(
       next();
     } else {
       let sessionKey = localStorage.getItem('sessionKey');
-      console.log("我是浏览器本地缓存的sessionKey: "+sessionKey);
+      console.log("sessionKey: "+sessionKey);
       if (sessionKey === 'null' || sessionKey === '') {
         next('/');
       } else {

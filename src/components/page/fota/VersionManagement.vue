@@ -20,8 +20,8 @@
                     <el-option    v-for="item in projectlist"    :key="item.value"    :label="item.label"    :value="item.label" ></el-option>
                 </el-select>
                 <span style="padding-left:20px">
-                    <el-button  @click="getVersionList()"  type="primary" round  size="mini">查询</el-button>
                     <el-button  type="primary" round  @click="handleResetSearch()"  size="mini">重置</el-button>
+                    <!-- <el-button  @click="getVersionList()"  type="primary" round  size="mini">查询</el-button> -->
                     <el-button  type="primary" round  class="btn-add"  @click="handleAddVersion()"  size="mini">添加最新版本</el-button>
                 </span>
             </el-card>
@@ -236,75 +236,57 @@ export default {
         this.getVersionList();
     },
     methods: {
-        getVersionList() {
-            this.$http
-                .get('/version/queryVersionPage', {
+       async getVersionList() {
+           const { data: res } =await  this.$http.get('/version/queryVersionPage', {
                     params: this.queryInfo
                 })
-                .then(res => {
-                    res = res.data;
-                    console.log('版本返回', res);
-                    if (res.code !== 0) {
-                        return this.$message.error('获取版本列表失败！');
-                    }
-                    this.versionList = res.data.list;
-                    this.totalSize = res.data.totalSize;
-                });
+                 if (res.code !== 0) {
+                    return this.$message.error('获取版本列表失败！');
+                 }
+                this.versionList = res.data.list;
+                this.totalSize = res.data.totalSize;
         },
 
         // 根据分页获取对应的项目列表
-        getProjectList() {
-            this.$http
-                .get('/project/queryPage', {
+       async getProjectList() {
+                const { data: res } =await this.$http.get('/project/queryPage', {
                     params: this.queryInfo
                 })
-                .then(res => {
-                    res = res.data;
-                    // console.log('返回结果',res)
-                    //      console.log('项目列表查询',res.data.list)
-                    if (res.code !== 0) {
-                        return this.$message.error('获取项目列表失败！');
-                    }
-                    this.projectlist = [];
-                    let projectlist = res.data.list;
-                    for (let i = 0; i < projectlist.length; i++) {
-                        this.projectlist.push({ label: projectlist[i].projectName, value: projectlist[i].id });
-                    }
-                });
+                if (res.code !== 0) {
+                    return this.$message.error('获取项目列表失败！');
+                }
+                this.projectlist = [];
+                let projectlist = res.data.list;
+                for (let i = 0; i < projectlist.length; i++) {
+                    this.projectlist.push({ label: projectlist[i].projectName, value: projectlist[i].id });
+                }
+       },
+      async  getBrandList() {
+            const { data: res } =await this.$http.get('/brand/queryPage', {
+                    params: this.queryInfo
+            })
+            if (res.code !== 0) {
+                 return this.$message.error('获取品牌表失败！');
+            }
+            this.brandList = [];
+            let brandList = res.data.list;
+            for (let i = 0; i < brandList.length; i++) {
+                this.brandList.push({ label: brandList[i].brandName, value: brandList[i].id });
+            }
         },
 
-        getBrandList() {
-            this.$http
-                .get('/brand/queryPage', {
+          async getDesignCompanyList() {
+           const { data: res } = await this.$http.get('/designCompany/queryPage', {
                     params: this.queryInfo
-                })
-                .then(res => {
-                    res = res.data;
-                    this.brandList = [];
-                    // console.log('品牌信息返回',res)
-                    let brandList = res.data.list;
-
-                    for (let i = 0; i < brandList.length; i++) {
-                        this.brandList.push({ label: brandList[i].brandName, value: brandList[i].id });
-                    }
-                    // console.log('品牌信息列表',brandList)
-                });
-        },
-
-        getDesignCompanyList() {
-            this.$http
-                .get('/designCompany/queryPage', {
-                    params: this.queryInfo
-                })
-                .then(res => {
-                    res = res.data;
-                    this.designCompanyList = [];
-                    let designCompanyList = res.data.list;
-                    for (let i = 0; i < designCompanyList.length; i++) {
-                        this.designCompanyList.push({ label: designCompanyList[i].designName, value: designCompanyList[i].id });
-                    }
-                    // console.log('设计公司列表',designCompanyList)
-                });
+            })
+            if (res.code !== 0) {
+                return this.$message.error('获取项目列表失败！');
+            }
+            this.designCompanyList = [];
+            let designCompanyList = res.data.list;
+            for (let i = 0; i < designCompanyList.length; i++) {
+                this.designCompanyList.push({ label: designCompanyList[i].designName, value: designCompanyList[i].id });
+            }
         },
         handleSelectionChange(){
             this.getVersionList()
