@@ -171,13 +171,10 @@ export default {
         }
     },
     watch:{
-       addForm: {
-    　　　　handler: function(newVal, oldVal) {
-    　　　　　　console.log(newVal, oldVal);　　//因为对象为引用类型数据，所以新旧值其实是同一个，没有差异
-    　　　　},
-    　　　　deep: true,　　//关键字，只有声明deep: true才能监听到整个对象的变化
-    　　　　immediate: true　　//关键字， 此关键字声明为true时，监听对象的初始化就会触发监听事件
-　　    }   
+     '$route' (to, from) {
+        // 路由发生变化页面刷新
+	     this.$router.go(0);
+		}
     },
     methods: {
 
