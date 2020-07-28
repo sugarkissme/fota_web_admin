@@ -6,7 +6,7 @@
 <script>
     import Version from '@/components/page/fota/Version'
     export default {
-        name: 'versionHomeUpdate',
+        name: 'versionHomeAdd',
         components: {Version} 
     }   
 </script>

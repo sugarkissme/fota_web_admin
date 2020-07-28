@@ -171,10 +171,10 @@ export default {
         }
     },
     watch:{
-     '$route' (to, from) {
-        // 路由发生变化页面刷新
-	     this.$router.go(0);
-		}
+    //  '$route' (to, from) {
+    //     // 路由发生变化页面刷新
+	//      this.$router.go(0);
+	// 	}
     },
     methods: {
 
