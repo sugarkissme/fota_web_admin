@@ -7,7 +7,7 @@
         </el-breadcrumb>
         <div class="app-container">
     
-         <el-card class="filter-container" >
+         <el-card  >
             <!-- 内容主体区域 -->
             <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
                 
