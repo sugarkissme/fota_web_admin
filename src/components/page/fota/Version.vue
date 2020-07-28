@@ -7,7 +7,7 @@
         </el-breadcrumb>
         <div class="app-container">
     
-         <el-card class="filter-container" shadow="never">
+         <el-card class="filter-container" >
             <!-- 内容主体区域 -->
             <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
                 
@@ -161,7 +161,7 @@ export default {
             }],
         };
     },
-     mounted() {
+     created() {
         this.chooseLanguages
         if(this.isEdit){
             this.getParam()
@@ -170,11 +170,8 @@ export default {
             this.getProjectList();
         }
     },
-    watch:{
-    //  '$route' (to, from) {
-    //     // 路由发生变化页面刷新
-	//      this.$router.go(0);
-	// 	}
+     watch:{
+      '$route':'getParam'
     },
     methods: {
 
