@@ -161,7 +161,7 @@ export default {
             }],
         };
     },
-     created() {
+    activated() {
         this.chooseLanguages
         if(this.isEdit){
             this.getParam()
