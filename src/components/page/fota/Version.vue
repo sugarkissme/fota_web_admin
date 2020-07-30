@@ -161,7 +161,7 @@ export default {
             }],
         };
     },
-    activated() {
+    created() {
         this.chooseLanguages
         if(this.isEdit){
             this.getParam()
@@ -197,6 +197,7 @@ export default {
                 this.checkList.push(this.addForm.languages[i].languageName)//勾选已有的数据
             }
             this.editableTabsValue=res.data.languages[0].languageCode
+        
 
         },
         //事件绑定
@@ -231,10 +232,10 @@ export default {
                  const { data: res } = await this.$http.post('/version/update', this.addForm);
                 
                 if (res.code !== 0) {
-                    this.$message.error('添加版本失败！' + JSON.stringify(res.msg));
+                    this.$message.error('修改版本失败！' + JSON.stringify(res.msg));
                 }else{
                     this.$message.success('修改成功')
-                    this.reload()
+                    this.getParam()
                 }
             }else{
                 const { data: res } = await this.$http.post('/version/create', this.addForm);
