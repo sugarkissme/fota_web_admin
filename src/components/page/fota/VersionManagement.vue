@@ -20,6 +20,11 @@
                     <el-option    v-for="item in projectlist"    :key="item.value"    :label="item.label"    :value="item.label" ></el-option>
                 </el-select>
                 <span style="padding-left:20px">
+                    <el-col :span="3">
+                          <el-input placeholder="模糊搜索" v-model="queryInfo.keywords" @keyup.enter.native="getVersionList"  clearable @clear="getVersionList">
+                              <el-button slot="append" icon="el-icon-search" @click="getVersionList"></el-button>
+                          </el-input>
+                    </el-col>
                     <el-button  type="primary" round  @click="handleResetSearch()"  size="mini">重置</el-button>
                     <!-- <el-button  @click="getVersionList()"  type="primary" round  size="mini">查询</el-button> -->
                     <el-button  type="primary" round  class="btn-add"  @click="handleAddVersion()"  size="mini">添加最新版本</el-button>
@@ -160,6 +165,7 @@ const defaultListQuery = {
     versionId: null,
     brandName: '',
     productName: '',
+    keywords: '',
     designName: '',
     projectName: '',
     pageNo: 1,

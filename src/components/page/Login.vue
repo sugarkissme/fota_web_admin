@@ -18,6 +18,12 @@
                         <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
                     </el-input>
                 </el-form-item>
+
+                  <el-form-item prop="seccode" class="inputbar">
+                        <el-input class="log-input" v-model="param.seccode" placeholder="验证码"  @keydown.enter.native="submitForm()"  >
+                                  <el-button slot="append" ><span class="checkCode" @click="createCode">{{ checkCode}}</span></el-button>
+                        </el-input>
+                </el-form-item>
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm()">登录</el-button>
                 </div>
@@ -35,19 +41,34 @@ export default {
             param: {
                 userName: '',
                 password: '',
+                seccode: '',
             },
+            checkCode:'',
             rules: {
                 userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
                 password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+                seccode: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
             },
              sessionKey:'',
         };
+    },
+     mounted () {
+        this.createCode();
     },
     methods: {
         ...mapMutations(['changeLogin']),
         submitForm() {
             this.$refs.login.validate(valid => {
+                if(this.param.seccode.toLocaleLowerCase() != this.checkCode.toLocaleLowerCase()) {
+                    this.$message({
+                        message: "验证码错误",
+                        type: "warning"
+                    });
+                    this.createCode();
+                    return false;
+                }
                 if (valid) {
+                    
                     this.$http.get('/admin/login',{params:this.param,headers:{"sessionKey":" "}}).then(res =>{
                              res = res.data
                             if(res.data==null){
@@ -68,6 +89,17 @@ export default {
                 }
             });
         },
+        createCode() {
+            var code = "";
+            const codeLength = 4; //验证码的长度  
+            const random = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+                'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'); //随机数  
+            for(let i = 0; i < codeLength; i++) { //循环操作  
+                let index = Math.floor(Math.random() * 36); //取得随机数的索引（0~35）  
+                code += random[index]; //根据索引取得随机数加到code上  
+            }
+            this.checkCode = code; //把code值赋给验证码  
+	    },
     },
 };
 </script>

@@ -27,8 +27,12 @@
                 </el-option>
             </el-select>
             <span style="padding-left:20px" >
+               <el-col :span="3">
+                          <el-input placeholder="模糊搜索" v-model="queryInfo.keywords" @keyup.enter.native="getProjectList" clearable @clear="getProjectList">
+                              <el-button slot="append" icon="el-icon-search" @click="getProjectList"></el-button>
+                          </el-input>
+                 </el-col>
               <el-button type="primary" round @click="handleResetSearch()"  size="small">  重置 </el-button>
-                <!-- <el-button type="primary"  round @click="getProjectList()" size="small"> 查询</el-button> -->
                 <el-button type="primary" round @click="addDialogVisible=true"   class="btn-add" size="small"> 添加 </el-button>
             </span>
          </div>
@@ -111,6 +115,7 @@ const defaultListQuery = {
         brandName: '',
         productName: '',
         designName: '',
+        keywords: '',
         pageNo: 1,
         pageSize: 15
   };

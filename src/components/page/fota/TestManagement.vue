@@ -19,6 +19,11 @@
                        <el-option      v-for="item in projectlist"      :key="item.value"      :label="item.label"      :value="item.label"  ></el-option>
                     </el-select>
                     <span style="padding-left:20px">
+                        <el-col :span="3">
+                          <el-input placeholder="模糊搜索" v-model="queryInfo.keywords" @keyup.enter.native="getImeiList" clearable @clear="getImeiList">
+                              <el-button slot="append" icon="el-icon-search" @click="getImeiList"></el-button>
+                          </el-input>
+                        </el-col>
                         <el-button  type="primary" round   @click="handleResetSearch()"    size="mini">重置</el-button>
                         <el-button     type="primary" round     @click="addDialogVisible=true"     size="mini" >添加</el-button>
                         <el-button     type="primary" round     @click="importDialogVisible=true"     size="mini" >批量导入</el-button>
@@ -152,6 +157,7 @@ const defaultListQuery = {
     productName: '',
     designName: '',
     projectName: '',
+    keywords: '',
     pageNo: 1,
     pageSize: 15
 };

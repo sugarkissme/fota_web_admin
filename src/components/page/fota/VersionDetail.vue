@@ -198,7 +198,7 @@
                 <div>
                     <el-row :gutter="20">
                             <el-col :span="8">
-                              <el-input placeholder="请输入内容" v-model="importForm.imei" clearable @clear="getVersionDetailImeiList">
+                              <el-input placeholder="请输入内容" v-model="importForm.imei" clearable @keyup.enter.native="getVersionDetailImeiList" @clear="getVersionDetailImeiList">
                                   <el-button slot="append" icon="el-icon-search" @click="getVersionDetailImeiList"></el-button>
                               </el-input>
                             </el-col>
