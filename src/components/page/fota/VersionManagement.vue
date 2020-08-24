@@ -389,9 +389,9 @@ export default {
 
 <style  scoped>
     .el-pagination {
-         text-align: center; 
+         text-align: right; 
     }
-    .paginnation-container {
+    /* .paginnation-container {
     position: fixed;
     
      left: 40%;
@@ -400,6 +400,6 @@ export default {
 .filter-container{
     height:65px;
     padding:0cm;
-}
+} */
 
 </style>

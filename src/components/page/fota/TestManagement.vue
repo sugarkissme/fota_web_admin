@@ -455,8 +455,10 @@ export default {
 </script>
 
 <style >
-
-.paginnation-container {
+    .el-pagination {
+            text-align: right; 
+    }
+/* .paginnation-container {
     position: fixed;
     
      left: 40%;
@@ -464,7 +466,7 @@ export default {
 }
 .filter-container{
     height:65px
-}
+} */
  .upload-border-none{
     border:none!important
   } 

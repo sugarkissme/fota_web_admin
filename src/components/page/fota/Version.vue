@@ -23,10 +23,13 @@
                 <el-form-item label="版本大小：" label-width='100px' style="width: 300px"  prop="versionSize">
                         <el-input v-model="addForm.versionSize" > </el-input>
                 </el-form-item>
+                
                  <el-form-item label="发布日期：" label-width='100px' style="width: 300px"  prop="releaseTime" >
                      <el-date-picker   type="date"  v-model="addForm.releaseTime"      style="width: 100%;"></el-date-picker>
                 </el-form-item>
-       
+                <el-form-item label="备注：" label-width='100px' style="width: 300px"  prop="memo">
+                        <el-input v-model="addForm.memo" > </el-input>
+                </el-form-item>
                 <div style="margin-bottom: 20px;">
                     <el-button size="small" @click="addLanguages(languages)" >
                          选择语言
@@ -82,6 +85,7 @@ const baseForm={
                 versionNo:null,
                 releaseTime:new Date(),
                 versionSize:'MB',
+                memo:null,
                 languages       :[
                     {
                         languageCode:'zh-cn',
@@ -120,6 +124,7 @@ export default {
                 releaseTime:null,
                 projectId:null,
                 versionSize:null,
+                memo:null,
                 languages:[
                     {
                         languageCode:null,
@@ -171,7 +176,7 @@ export default {
         }
     },
      watch:{
-      '$route':'getParam'
+    //   '$route':'getParam'
     },
     methods: {
 
@@ -245,7 +250,8 @@ export default {
                 }else{
                     this.$refs.addFormRef.resetFields()
                     this.$message.success('添加版本成功')
-                    this.reload()
+                    // this.reload()
+                    this.$router.push({path: '/versionManagement'})
                 }
             }
             });
