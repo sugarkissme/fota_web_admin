@@ -169,6 +169,7 @@ export default {
     created() {
         this.chooseLanguages
         if(this.isEdit){
+
             this.getParam()
         }else{
             this.addForm = Object.assign({},baseForm);
@@ -176,13 +177,16 @@ export default {
         }
     },
      watch:{
-    //   '$route':'getParam'
+      '$route':'getParam'
     },
     methods: {
 
          
          //页面初始化
        async getParam(){
+            if(!this.isEdit){//新增数据不重新渲染，否则会出现'升级描述'组件加载不出来
+                return;
+            }
             const param=this.$route.query;
             this.versionId=param.versionId;
             this.editableTabs=[]
