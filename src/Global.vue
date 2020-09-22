@@ -1,6 +1,6 @@
 <script>
   const server_config = {
-    url: 'http://192.168.108.87:8085'
+    url: 'http://192.168.12.61:8085'
   };
   export default {
     server_config
